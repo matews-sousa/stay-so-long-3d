@@ -10,6 +10,7 @@ find_package(OpenGL REQUIRED)
 
 set(SOURCES
   src/main.cpp
+  src/Core/Game.cpp
 )
 
 # Add the executable
