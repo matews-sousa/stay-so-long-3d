@@ -7,6 +7,7 @@ class Game
 {
 private:
   sf::Clock clock;
+  sf::Event event;
 
 public:
   Game();

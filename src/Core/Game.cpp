@@ -1,4 +1,5 @@
 #include "Game.hpp"
+#include "Input.hpp"
 #include <iostream>
 #include <GL/gl.h>
 #include <glm/gtc/matrix_transform.hpp>
@@ -89,7 +90,6 @@ void Game::run()
 {
   while (window->isOpen())
   {
-    processEvents();
     update();
     render();
   }
@@ -97,6 +97,11 @@ void Game::run()
 
 void Game::update()
 {
+  while (window->pollEvent(event))
+  {
+    processEvents();
+  }
+
   deltaTime = clock.restart().asSeconds();
 }
 
@@ -115,15 +120,28 @@ void Game::render()
 
 void Game::processEvents()
 {
-  sf::Event event;
+  if (event.type == sf::Event::Closed)
+    window->close();
 
-  while (window->pollEvent(event))
+  // handle keyboard input
+  if (event.type == sf::Event::KeyPressed)
   {
-    if (event.type == sf::Event::Closed)
-    {
+    Input::set_key_pressed(event.key.code, true);
+    if (event.key.code == sf::Keyboard::Q)
       window->close();
-    }
   }
+  if (event.type == sf::Event::KeyReleased)
+    Input::set_key_pressed(event.key.code, false);
+
+  // handle mouse input
+  if (event.type == sf::Event::MouseButtonPressed)
+    Input::set_mouse_button_down(event.mouseButton.button, true);
+  if (event.type == sf::Event::MouseButtonReleased)
+    Input::set_mouse_button_down(event.mouseButton.button, false);
+
+  // handle mouse movement
+  if (event.type == sf::Event::MouseMoved)
+    Input::set_mouse_pos(glm::vec2(event.mouseMove.x, event.mouseMove.y));
 }
 
 sf::RenderWindow *Game::window;
