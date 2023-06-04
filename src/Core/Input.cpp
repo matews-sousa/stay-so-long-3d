@@ -1,16 +1,16 @@
 #include "Input.hpp"
 
-void Input::set_key_pressed(sf::Keyboard::Key key, bool value)
+void Input::setKeyPressed(sf::Keyboard::Key key, bool value)
 {
   keys[key] = value;
 }
 
-void Input::set_mouse_pos(glm::vec2 pos)
+void Input::setMousePos(glm::vec2 pos)
 {
   mouse_pos = pos;
 }
 
-void Input::set_mouse_button_down(sf::Mouse::Button button, bool value)
+void Input::setMouseButtonDown(sf::Mouse::Button button, bool value)
 {
   mouse_buttons[button] = value;
 }

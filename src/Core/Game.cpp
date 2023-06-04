@@ -4,47 +4,7 @@
 #include <GL/gl.h>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-
-typedef float color[3];
-
-color white = { 1.0f, 1.0f, 1.0f };
-color red = { 1.0f, 0.0f, 0.0f };
-color green = { 0.0f, 1.0f, 0.0f };
-color blue = { 0.0f, 0.0f, 1.0f };
-color yellow = { 1.0f, 1.0f, 0.0f };
-color magenta = { 1.0f, 0.0f, 1.0f };
-color cyan = { 0.0f, 1.0f, 1.0f };
-
-void rect(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, glm::vec3 p4, color c) {
-  glColor3fv(c);
-  glBegin(GL_QUADS);
-    glVertex3fv(glm::value_ptr(p1));
-    glVertex3fv(glm::value_ptr(p2));
-    glVertex3fv(glm::value_ptr(p3));
-    glVertex3fv(glm::value_ptr(p4));
-  glEnd();
-}
-
-void drawCube(float s) {
-  float d = s / 2.0;
-
-  glm::vec3 v1(-d,  d,  d );
-  glm::vec3 v2(-d, -d,  d );
-  glm::vec3 v3( d, -d,  d );
-  glm::vec3 v4( d,  d,  d );
-
-  glm::vec3 v5( d,  d, -d );
-  glm::vec3 v6( d, -d, -d );
-  glm::vec3 v7(-d, -d, -d );
-  glm::vec3 v8(-d,  d, -d );
-
-  rect(v1, v2, v3, v4, red); // front
-  rect(v4, v3, v6, v5, green); // right
-  rect(v5, v8, v7, v6, blue); // back
-  rect(v1, v8, v7, v2, yellow); // left
-  rect(v1, v4, v5, v8, magenta); // top
-  rect(v2, v7, v6, v3, cyan); // bottom
-}
+#include "../primitives.hpp"
 
 Game::Game()
 {
@@ -59,6 +19,8 @@ Game::Game()
   window->setFramerateLimit(60);
   window->setPosition(sf::Vector2i((desktop.width - window->getSize().x) / 2, (desktop.height - window->getSize().y) / 2));
 
+  player = new Player(glm::vec3(0.0f, 75.0f, 0.0f), glm::vec3(30.0f, 100.0f, 30.0f));
+
   init();
 }
 
@@ -71,14 +33,17 @@ void Game::init()
 {
   glViewport(0, 0, window->getSize().x, window->getSize().y);
 
-  camera = new Camera(glm::vec3(100.0f, 100.0f, -100.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-  glm::mat4 viewMatrix = camera->getViewMatrix();
-  glm::mat4 projectionMatrix = glm::perspective(45.0f, (float)window->getSize().x / (float)window->getSize().y, 0.1f, 500.0f);
+  float halfWidth = window->getSize().x / 2.0f;
+  float halfHeight = window->getSize().y / 2.0f;
 
+  glm::mat4 projectionMatrix = glm::ortho(-halfWidth, halfWidth, -halfHeight, halfHeight, 0.1f, 2000.0f);
+  //glm::mat4 projectionMatrix = glm::perspective(glm::radians(45.0f), (float)window->getSize().x / (float)window->getSize().y, 0.1f, 2000.0f);
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
   glMultMatrixf(glm::value_ptr(projectionMatrix));
 
+  camera = new Camera(glm::vec3(500.0f, 500.0f, -500.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+  glm::mat4 viewMatrix = camera->getViewMatrix();
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
   glMultMatrixf(glm::value_ptr(viewMatrix));
@@ -102,6 +67,12 @@ void Game::update()
     processEvents();
   }
 
+  glm::mat4 viewMatrix = camera->getViewMatrix();
+  glMatrixMode(GL_MODELVIEW);
+  glLoadIdentity();
+  glMultMatrixf(glm::value_ptr(viewMatrix));
+
+  player->update();
   deltaTime = clock.restart().asSeconds();
 }
 
@@ -109,11 +80,26 @@ void Game::render()
 {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+  // draw axis
+  glBegin(GL_LINES);
+  glColor3f(1.0f, 0.0f, 0.0f);
+  glVertex3f(-1000.0f, 0.0f, 0.0f);
+  glVertex3f(1000.0f, 0.0f, 0.0f);
+  glColor3f(0.0f, 1.0f, 0.0f);
+  glVertex3f(0.0f, -1000.0f, 0.0f);
+  glVertex3f(0.0f, 1000.0f, 0.0f);
+  glColor3f(0.0f, 0.0f, 1.0f);
+  glVertex3f(0.0f, 0.0f, -1000.0f);
+  glVertex3f(0.0f, 0.0f, 1000.0f);
+  glEnd();
+
   glPushMatrix();
   glTranslatef(0.0f, 0.0f, 0.0f);
-  glScalef(10.0f, 10.0f, 10.0f);
+  glScalef(500.0f, 50.0f, 500.0f);
   drawCube(1.0f);
   glPopMatrix();
+
+  player->draw();
 
   window->display();
 }
@@ -126,22 +112,22 @@ void Game::processEvents()
   // handle keyboard input
   if (event.type == sf::Event::KeyPressed)
   {
-    Input::set_key_pressed(event.key.code, true);
+    Input::setKeyPressed(event.key.code, true);
     if (event.key.code == sf::Keyboard::Q)
       window->close();
   }
   if (event.type == sf::Event::KeyReleased)
-    Input::set_key_pressed(event.key.code, false);
+    Input::setKeyPressed(event.key.code, false);
 
   // handle mouse input
   if (event.type == sf::Event::MouseButtonPressed)
-    Input::set_mouse_button_down(event.mouseButton.button, true);
+    Input::setMouseButtonDown(event.mouseButton.button, true);
   if (event.type == sf::Event::MouseButtonReleased)
-    Input::set_mouse_button_down(event.mouseButton.button, false);
+    Input::setMouseButtonDown(event.mouseButton.button, false);
 
   // handle mouse movement
   if (event.type == sf::Event::MouseMoved)
-    Input::set_mouse_pos(glm::vec2(event.mouseMove.x, event.mouseMove.y));
+    Input::setMousePos(glm::vec2(event.mouseMove.x, event.mouseMove.y));
 }
 
 sf::RenderWindow *Game::window;

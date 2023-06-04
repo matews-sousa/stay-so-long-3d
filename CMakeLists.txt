@@ -10,9 +10,13 @@ find_package(OpenGL REQUIRED)
 
 set(SOURCES
   src/main.cpp
+  src/primitives.cpp
   src/Core/Game.cpp
   src/Core/Camera.cpp
   src/Core/Input.cpp
+
+  src/Entities/GameObject.cpp
+  src/Entities/Player.cpp
 )
 
 # Add the executable
