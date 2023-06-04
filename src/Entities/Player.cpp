@@ -31,16 +31,52 @@ void Player::update()
   float moveZ = 0.0f;
   float moveX = 0.0f;
 
-  if (Input::isKeyPressed(sf::Keyboard::W))
-    moveZ = 1.0f;
-  if (Input::isKeyPressed(sf::Keyboard::S))
-    moveZ = -1.0f;
-  if (Input::isKeyPressed(sf::Keyboard::A))
-    moveX = 1.0f;
-  if (Input::isKeyPressed(sf::Keyboard::D))
-    moveX = -1.0f;
+  bool up = Input::isKeyPressed(sf::Keyboard::W);
+  bool down = Input::isKeyPressed(sf::Keyboard::S);
+  bool left = Input::isKeyPressed(sf::Keyboard::A);
+  bool right = Input::isKeyPressed(sf::Keyboard::D);
 
-  glm::vec3 direction = glm::vec3(moveX, 0.0f, moveZ);
+  glm::vec3 direction = glm::vec3(0.0f, 0.0f, 0.0f);
+  
+  if (up)
+  {
+    // make a vector diagonally up and right
+    if (right)
+      direction = glm::vec3(-1.0f, 0.0f, 0.0f);
+
+    // make a vector diagonally up and left
+    else if (left)
+      direction = glm::vec3(0.0f, 0.0f, 1.0f);
+    
+    // make a vector pointing up
+    else
+      direction = glm::vec3(-1.0f, 0.0f, 1.0f);
+  }
+  else if (down)
+  {
+    // make a vector diagonally down and right
+    if (right)
+      direction = glm::vec3(0.0f, 0.0f, -1.0f);
+
+    // make a vector diagonally down and left
+    else if (left)
+      direction = glm::vec3(1.0f, 0.0f, 0.0f);
+    
+    // make a vector pointing down
+    else
+      direction = glm::vec3(1.0f, 0.0f, -1.0f);
+  }
+  else if (left)
+  {
+    // make a vector pointing left
+    direction = glm::vec3( 1.0f, 0.0f, 1.0f);
+  }
+  else if (right)
+  {
+    // make a vector pointing right
+    direction = glm::vec3(-1.0f, 0.0f, -1.0f);
+  }
+
   if (glm::length(direction) > 0.0f)
     direction = glm::normalize(direction);
 
@@ -126,8 +162,6 @@ void Player::updateLocalMatrix()
   localMatrix[0][3] = position.x;
   localMatrix[1][3] = position.y;
   localMatrix[2][3] = position.z;
-
-  std::cout << glm::to_string(localMatrix) << std::endl;
 
   localMatrix = glm::transpose(localMatrix);
 }
