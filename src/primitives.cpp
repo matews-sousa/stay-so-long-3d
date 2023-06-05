@@ -1,12 +1,12 @@
 #include "primitives.hpp"
 
 void rect(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, glm::vec3 p4, sf::Color c) {
-  glColor3f(c.r, c.g, c.b);
+  glColor3f(1.0f, 1.0f, 1.0f);
   glBegin(GL_QUADS);
-    glVertex3fv(glm::value_ptr(p1));
-    glVertex3fv(glm::value_ptr(p2));
-    glVertex3fv(glm::value_ptr(p3));
-    glVertex3fv(glm::value_ptr(p4));
+    glTexCoord2f(1.0f, 1.0f); glVertex3fv(glm::value_ptr(p1));
+    glTexCoord2f(0.0f, 1.0f); glVertex3fv(glm::value_ptr(p2));
+    glTexCoord2f(0.0f, 0.0f); glVertex3fv(glm::value_ptr(p3));
+    glTexCoord2f(1.0f, 0.0f); glVertex3fv(glm::value_ptr(p4));
   glEnd();
 }
 

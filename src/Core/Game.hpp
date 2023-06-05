@@ -11,15 +11,17 @@ private:
   sf::Event event;
   Player *player;
 
+  void loadTextures();
+  void init();
+  void update();
+  void render();
+  void processEvents();
+
 public:
   Game();
   virtual ~Game();
 
-  void init();
   void run();
-  void update();
-  void render();
-  void processEvents();
 
   static sf::RenderWindow *window;
   static Camera *camera;
