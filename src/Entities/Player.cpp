@@ -91,7 +91,7 @@ void Player::move(glm::vec3 direction)
   if (glm::length(direction) == 0.0f)
     return;
 
-  this->velocity = forward * speed * Game::deltaTime;
+  this->velocity = direction * speed * Game::deltaTime;
   this->position += this->velocity;
   
   Game::camera->move(velocity);

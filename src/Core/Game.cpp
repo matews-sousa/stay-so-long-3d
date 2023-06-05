@@ -95,6 +95,7 @@ void Game::render()
 
   glPushMatrix();
   glTranslatef(0.0f, 0.0f, 0.0f);
+  glRotatef(180.0f, 0.0f, 0.0f, 1.0f);
   glScalef(500.0f, 50.0f, 500.0f);
   drawCube(1.0f);
   glPopMatrix();
