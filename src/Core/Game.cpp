@@ -5,6 +5,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include "../primitives.hpp"
+#include "Texture.hpp"
 
 Game::Game()
 {
@@ -19,7 +20,7 @@ Game::Game()
   window->setFramerateLimit(60);
   window->setPosition(sf::Vector2i((desktop.width - window->getSize().x) / 2, (desktop.height - window->getSize().y) / 2));
 
-  player = new Player(glm::vec3(0.0f, 75.0f, 0.0f), glm::vec3(30.0f, 100.0f, 30.0f));
+  player = new Player(glm::vec3(0.0f, 75.0f, 0.0f), glm::vec3(30.0f, 70.0f, 30.0f));
 
   init();
 }
@@ -27,6 +28,15 @@ Game::Game()
 Game::~Game()
 {
   delete window;
+  delete player;
+  delete camera;
+}
+
+void Game::loadTextures()
+{
+  Texture *texture = new Texture("../src/Assets/Textures/container.jpg", "container");
+  texture = new Texture("../src/Assets/Textures/wall.jpg", "wall");
+  texture = new Texture("../src/Assets/Textures/awesomeface.png", "awesomeface");
 }
 
 void Game::init()
@@ -36,8 +46,8 @@ void Game::init()
   float halfWidth = window->getSize().x / 2.0f;
   float halfHeight = window->getSize().y / 2.0f;
 
-  glm::mat4 projectionMatrix = glm::ortho(-halfWidth, halfWidth, -halfHeight, halfHeight, 0.1f, 2000.0f);
-  //glm::mat4 projectionMatrix = glm::perspective(glm::radians(45.0f), (float)window->getSize().x / (float)window->getSize().y, 0.1f, 2000.0f);
+  //glm::mat4 projectionMatrix = glm::ortho(-halfWidth, halfWidth, -halfHeight, halfHeight, 0.1f, 2000.0f);
+  glm::mat4 projectionMatrix = glm::perspective(glm::radians(45.0f), (float)window->getSize().x / (float)window->getSize().y, 0.1f, 2000.0f);
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
   glMultMatrixf(glm::value_ptr(projectionMatrix));
@@ -49,6 +59,10 @@ void Game::init()
   glMultMatrixf(glm::value_ptr(viewMatrix));
 
   glEnable(GL_DEPTH_TEST);
+
+  glEnable(GL_TEXTURE_2D);
+
+  loadTextures();
 }
 
 void Game::run()
@@ -93,6 +107,7 @@ void Game::render()
   glVertex3f(0.0f, 0.0f, 1000.0f);
   glEnd();
 
+  Texture::bindByName("wall");
   glPushMatrix();
   glTranslatef(0.0f, 0.0f, 0.0f);
   glRotatef(180.0f, 0.0f, 0.0f, 1.0f);
@@ -100,6 +115,14 @@ void Game::render()
   drawCube(1.0f);
   glPopMatrix();
 
+  Texture::bindByName("awesomeface");
+  glPushMatrix();
+  glTranslatef(50.0f, 50.0f, 50.0f);
+  glScalef(50.0f, 50.0f, 50.0f);
+  drawCube(1.0f);
+  glPopMatrix();
+
+  Texture::bindByName("container");
   player->draw();
 
   window->display();

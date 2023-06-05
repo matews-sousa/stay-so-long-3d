@@ -14,6 +14,7 @@ set(SOURCES
   src/Core/Game.cpp
   src/Core/Camera.cpp
   src/Core/Input.cpp
+  src/Core/Texture.cpp
 
   src/Entities/GameObject.cpp
   src/Entities/Player.cpp
