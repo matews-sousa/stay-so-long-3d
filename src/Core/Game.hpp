@@ -3,6 +3,10 @@
 #include <SFML/Graphics.hpp>
 #include "Camera.hpp"
 #include "../Entities/Player.hpp"
+#include <vector>
+#include <map>
+#include <string>
+#include "Model.hpp"
 
 class Game
 {
@@ -10,8 +14,10 @@ private:
   sf::Clock clock;
   sf::Event event;
   Player *player;
+  std::map<std::string, Model *> models;
 
-  void loadTextures();
+  void initTextures();
+  void initObjModels();
   void init();
   void update();
   void render();
