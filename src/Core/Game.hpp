@@ -14,7 +14,6 @@ private:
   sf::Clock clock;
   sf::Event event;
   Player *player;
-  std::map<std::string, Model *> models;
 
   void initTextures();
   void initObjModels();
@@ -32,4 +31,5 @@ public:
   static sf::RenderWindow *window;
   static Camera *camera;
   static float deltaTime;
+  static std::map<std::string, Model *> models;
 };

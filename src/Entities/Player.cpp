@@ -115,12 +115,13 @@ void Player::draw()
   model = glm::translate(model, this->position);
   model = glm::scale(model, this->scale);
   
-  //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
   // body
+  Texture::bindByName("mecha");
   glPushMatrix();
     glMultMatrixf(glm::value_ptr(localMatrix));
+    glRotatef(-90.0f, 0.0f, 1.0f, 0.0f);
     glScalef(scale.x, scale.y, scale.z);
-    drawCube(1.0f);
+    Game::models["mecha"]->draw();
   glPopMatrix();
 
   glPointSize(10.0f);

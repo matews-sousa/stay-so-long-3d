@@ -13,7 +13,7 @@ Model::Model(std::string fileName)
   if (objectLoaded)
   {
     std::cout << "Object " << fileName << " loaded successfully" << std::endl;
-    drawModel();
+    createDisplayList();
   }
   else
   {
@@ -25,7 +25,12 @@ Model::~Model()
 {
 }
 
-void Model::drawModel()
+void Model::draw()
+{
+  glCallList(displayList);
+}
+
+void Model::createDisplayList()
 {
   if (objectLoaded)
   {

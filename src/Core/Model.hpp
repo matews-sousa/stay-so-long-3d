@@ -32,7 +32,8 @@ public:
   Model(std::string fileName);
   virtual ~Model();
 
-  void drawModel();
+  void draw();
+  void createDisplayList();
   void drawFace(Face &face);
 
   bool loadObject(std::string fileName);
