@@ -1,16 +1,20 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include "Camera.hpp"
-#include "../Entities/Player.hpp"
 #include <vector>
 #include <map>
 #include <string>
+#include <glm/mat4x4.hpp>
+#include "Camera.hpp"
 #include "Model.hpp"
+#include "Light.hpp"
+#include "../Entities/Player.hpp"
 
 class Game
 {
 private:
+  glm::mat4 projectionMatrix;
+  glm::mat4 viewMatrix;
   sf::Clock clock;
   sf::Event event;
   Player *player;
@@ -32,4 +36,5 @@ public:
   static Camera *camera;
   static float deltaTime;
   static std::map<std::string, Model *> models;
+  static Light *light;
 };

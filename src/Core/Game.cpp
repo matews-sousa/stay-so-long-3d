@@ -6,12 +6,12 @@
 #include <glm/gtc/type_ptr.hpp>
 #include "../primitives.hpp"
 #include "Texture.hpp"
-#include "Model.hpp"
 
 sf::RenderWindow *Game::window;
 Camera *Game::camera;
 float Game::deltaTime;
 std::map<std::string, Model *> Game::models;
+Light *Game::light;
 
 Game::Game()
 {
@@ -26,11 +26,17 @@ Game::Game()
   window->setFramerateLimit(60);
   window->setPosition(sf::Vector2i((desktop.width - window->getSize().x) / 2, (desktop.height - window->getSize().y) / 2));
 
-  player = new Player(glm::vec3(0.0f, 35.0f, 0.0f), glm::vec3(15.0f, 15.0f, 15.0f));
+  player = new Player(glm::vec3(0.0f, 100.0f, 0.0f), glm::vec3(15.0f, 15.0f, 15.0f));
+
+  light = new Light(glm::vec3(500.0f, 500.0f, 500.0f), glm::vec3(0.2f, 0.2f, 0.2f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f));
+  
+  projectionMatrix = glm::mat4(1.0f);
+  viewMatrix = glm::mat4(1.0f);
 
   init();
   initTextures();
   initObjModels();
+
 }
 
 Game::~Game()
@@ -53,10 +59,10 @@ void Game::initTextures()
 
 void Game::initObjModels()
 {
-  models["cube"] = new Model("../src/Assets/Models/cube.obj");
-  models["mecha"] = new Model("../src/Assets/Models/mecha.obj");
-  models["spaceship"] = new Model("../src/Assets/Models/Spaceship6.obj");
-  models["building"] = new Model("../src/Assets/Models/building.obj");
+  models["cube"] = new Model("../src/Assets/Models/cube.obj", *light);
+  models["mecha"] = new Model("../src/Assets/Models/mecha.obj", *light);
+  models["spaceship"] = new Model("../src/Assets/Models/Spaceship6.obj", *light);
+  models["building"] = new Model("../src/Assets/Models/building.obj", *light);
 }
 
 void Game::init()
@@ -66,14 +72,14 @@ void Game::init()
   float halfWidth = window->getSize().x / 2.0f;
   float halfHeight = window->getSize().y / 2.0f;
 
-  //glm::mat4 projectionMatrix = glm::ortho(-halfWidth, halfWidth, -halfHeight, halfHeight, 0.1f, 2000.0f);
-  glm::mat4 projectionMatrix = glm::perspective(glm::radians(45.0f), (float)window->getSize().x / (float)window->getSize().y, 0.1f, 2000.0f);
+  //projectionMatrix = glm::ortho(-halfWidth, halfWidth, -halfHeight, halfHeight, 0.1f, 2000.0f);
+  projectionMatrix = glm::perspective(glm::radians(45.0f), (float)window->getSize().x / (float)window->getSize().y, 0.1f, 2500.0f);
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
   glMultMatrixf(glm::value_ptr(projectionMatrix));
 
   camera = new Camera(glm::vec3(500.0f, 500.0f, -500.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-  glm::mat4 viewMatrix = camera->getViewMatrix();
+  viewMatrix = camera->getViewMatrix();
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
   glMultMatrixf(glm::value_ptr(viewMatrix));
@@ -82,7 +88,7 @@ void Game::init()
 
   glEnable(GL_TEXTURE_2D);
 
-  glEnable(GL_LIGHTING);
+/*   glEnable(GL_LIGHTING);
   glEnable(GL_LIGHT0);
   glEnable(GL_COLOR_MATERIAL);
 
@@ -94,7 +100,7 @@ void Game::init()
   glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
   glLightfv(GL_LIGHT0, GL_AMBIENT, lightAmbient);
   glLightfv(GL_LIGHT0, GL_DIFFUSE, lightDiffuse);
-  glLightfv(GL_LIGHT0, GL_SPECULAR, lightSpecular);
+  glLightfv(GL_LIGHT0, GL_SPECULAR, lightSpecular); */
 }
 
 void Game::run()
@@ -121,8 +127,10 @@ void Game::update()
 
   // make the light position rotate around the origin
   lightAngle += 0.1f;
-  GLfloat lightPosition[] = { 700.0f * cosf(lightAngle), 500.0f, 700.0f * sinf(lightAngle), 1.0f };
+  GLfloat lightPosition[] = { 500.0f * cosf(lightAngle), 500.0f, 500.0f * sinf(lightAngle), 1.0f };
   glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
+
+  light->setPosition(glm::vec3(lightPosition[0], lightPosition[1], lightPosition[2]));
 
   player->update();
   deltaTime = clock.restart().asSeconds();
@@ -145,38 +153,82 @@ void Game::render()
   glVertex3f(0.0f, 0.0f, 1000.0f);
   glEnd();
 
-  glColor3f(1.0f, 1.0f, 1.0f);
-
+  // terrain generation
   Texture::bindByName("wall");
-  glBindTexture(GL_TEXTURE_2D, 0);
+  glm::mat4 modelMatrix = glm::mat4(1.0f);
+  //modelMatrix = glm::translate(modelMatrix, glm::vec3(-1000.0f, 0.0f, -1000.0f));
   glPushMatrix();
-  glTranslatef(0.0f, -100.0f, 0.0f);
-  glScalef(200.0f, 200.0f, 200.0f);
-  models["cube"]->draw();
+  glMultMatrixf(glm::value_ptr(modelMatrix));
+  for (int x = -2000; x < 2000; x += 100)
+  {
+    for (int z = -2000; z < 2000; z += 100)
+    {
+      glBegin(GL_TRIANGLE_STRIP);
+
+      glm::vec3 illum1 = light->calculateIllumination(glm::vec3(x, 0.0f, z), glm::vec3(0.0f, 1.0f, 0.0f), modelMatrix);
+      glColor3fv(glm::value_ptr(illum1));
+      glNormal3f(0.0f, 1.0f, 0.0f);
+      glTexCoord2f(0.0f, 0.0f);
+      glVertex3f(x, 0.0f, z);
+
+      glm::vec3 illum2 = light->calculateIllumination(glm::vec3(x, 0.0f, z + 100), glm::vec3(0.0f, 1.0f, 0.0f), modelMatrix);
+      glColor3fv(glm::value_ptr(illum2));
+      glNormal3f(0.0f, 1.0f, 0.0f);
+      glTexCoord2f(0.0f, 1.0f);
+      glVertex3f(x, 0.0f, z + 100);
+
+      glm::vec3 illum3 = light->calculateIllumination(glm::vec3(x + 100, 0.0f, z), glm::vec3(0.0f, 1.0f, 0.0f), modelMatrix);
+      glColor3fv(glm::value_ptr(illum3));
+      glNormal3f(0.0f, 1.0f, 0.0f);
+      glTexCoord2f(1.0f, 0.0f);
+      glVertex3f(x + 100, 0.0f, z);
+
+      glm::vec3 illum4 = light->calculateIllumination(glm::vec3(x + 100, 0.0f, z + 100), glm::vec3(0.0f, 1.0f, 0.0f), modelMatrix);
+      glColor3fv(glm::value_ptr(illum4));
+      glNormal3f(0.0f, 1.0f, 0.0f);
+      glTexCoord2f(1.0f, 1.0f);
+      glVertex3f(x + 100, 0.0f, z + 100);
+
+      glEnd();
+    }
+  }
   glPopMatrix();
 
+  glColor3f(1.0f, 1.0f, 1.0f);
+
   Texture::bindByName("mecha");
+  modelMatrix = glm::mat4(1.0f);
+  modelMatrix = glm::translate(modelMatrix, glm::vec3(0.0f, 0.0f, 0.0f));
+  modelMatrix = glm::scale(modelMatrix, glm::vec3(50.0f, 50.0f, 50.0f));
   glPushMatrix();
-  glTranslatef(0.0f, 0.0f, 0.0f);
-  glScalef(50.0f, 50.0f, 50.0f);
+  glMultMatrixf(glm::value_ptr(modelMatrix));
+  models["mecha"]->setModelMatrix(modelMatrix);
   models["mecha"]->draw();
   glPopMatrix();
 
   Texture::bindByName("building");
+  modelMatrix = glm::mat4(1.0f);
+  modelMatrix = glm::translate(modelMatrix, glm::vec3(150.0f, 0.0f, 150.0f));
+  modelMatrix = glm::scale(modelMatrix, glm::vec3(25.0f, 25.0f, 25.0f));
   glPushMatrix();
-  glTranslatef(150.0f, 0.0f, 150.0f);
-  glScalef(25.0f, 25.0f, 25.0f);
+  glMultMatrixf(glm::value_ptr(modelMatrix));
+  models["building"]->setModelMatrix(modelMatrix);
   models["building"]->draw();
   glPopMatrix();
 
   Texture::bindByName("spaceship");
+  modelMatrix = glm::mat4(1.0f);
+  modelMatrix = glm::translate(modelMatrix, glm::vec3(-150.0f, 25.0f, -150.0f));
+  modelMatrix = glm::scale(modelMatrix, glm::vec3(25.0f, 25.0f, 25.0f));
   glPushMatrix();
-  glTranslatef(-150.0f, 25.0f, -150.0f);
-  glScalef(25.0f, 25.0f, 25.0f);
+  glMultMatrixf(glm::value_ptr(modelMatrix));
+  models["spaceship"]->setModelMatrix(modelMatrix);
   models["spaceship"]->draw();
   glPopMatrix();
 
   player->draw();
+
+  light->draw();
 
   window->display();
 }

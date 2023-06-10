@@ -10,6 +10,8 @@
 #include "../Core/Game.hpp"
 #include "../Core/Input.hpp"
 
+bool isInAir = false;
+
 Player::Player(glm::vec3 position, glm::vec3 scale) : GameObject(position, scale)
 {
   this->velocity = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -83,6 +85,18 @@ void Player::update()
   this->move(direction);
   this->look(direction);
 
+  position.y -= 5.0f;
+  if (position.y < 0.0f)
+  {
+    position.y = 0.0f;
+    isInAir = false;
+  }
+  else
+    isInAir = true;
+
+  if (Input::isKeyPressed(sf::Keyboard::Space) && !isInAir)
+    position.y += 5000.0f * Game::deltaTime;
+
   updateLocalMatrix();
 }
 
@@ -112,15 +126,14 @@ void Player::look(glm::vec3 direction)
 void Player::draw()
 {
   glm::mat4 model = glm::mat4(1.0f);
-  model = glm::translate(model, this->position);
+  model = glm::rotate(model, glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
   model = glm::scale(model, this->scale);
   
   // body
   Texture::bindByName("mecha");
   glPushMatrix();
-    glMultMatrixf(glm::value_ptr(localMatrix));
-    glRotatef(-90.0f, 0.0f, 1.0f, 0.0f);
-    glScalef(scale.x, scale.y, scale.z);
+    glMultMatrixf(glm::value_ptr(localMatrix * model));
+    Game::models["mecha"]->setModelMatrix(localMatrix * model);
     Game::models["mecha"]->draw();
   glPopMatrix();
 

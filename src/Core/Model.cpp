@@ -1,8 +1,10 @@
 #include "Model.hpp"
 
-Model::Model(std::string fileName)
+Model::Model(std::string fileName, Light &light, glm::mat4 modelMatrix)
 {
   this->fileName = fileName;
+  this->light = &light;
+  this->modelMatrix = modelMatrix;
 
   objectLoaded = false;
 
@@ -53,6 +55,10 @@ void Model::drawFace(Face &face)
 
   for (int v = 0; v < face.vertices.size(); v++)
   {
+    glm::vec3 illum = light->calculateIllumination(face.vertices[v], face.normals[v], modelMatrix);
+
+    glColor3f(illum.x, illum.y, illum.z);
+
     if (face.texCoords.size() > 0)
       glTexCoord2f(face.texCoords[v].x, face.texCoords[v].y);
     if (face.normals.size() > 0)

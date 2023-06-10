@@ -13,6 +13,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include "Texture.hpp"
+#include "Light.hpp"
 
 struct Face
 {
@@ -29,7 +30,7 @@ struct Face
 class Model
 {
 public:
-  Model(std::string fileName);
+  Model(std::string fileName, Light &light, glm::mat4 modelMatrix = glm::mat4(1.0f));
   virtual ~Model();
 
   void draw();
@@ -42,8 +43,15 @@ public:
   glm::vec3 getCenter() { return center; }
   GLuint getDisplayList() { return displayList; }
   std::string getFileName() { return fileName; }
+  glm::mat4 getModelMatrix() { return modelMatrix; }
+
+  void setModelMatrix(glm::mat4 modelMatrix) { this->modelMatrix = modelMatrix; }
 
 private:
+  Light *light;
+
+  glm::mat4 modelMatrix;
+
   std::vector<Face> faces;
 
   glm::vec3 boundingPoints[8];
