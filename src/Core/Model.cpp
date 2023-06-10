@@ -1,9 +1,9 @@
 #include "Model.hpp"
 
-Model::Model(std::string fileName, Light &light, glm::mat4 modelMatrix)
+Model::Model(std::string fileName, std::vector<Light *> lights, glm::mat4 modelMatrix)
 {
   this->fileName = fileName;
-  this->light = &light;
+  this->lights = lights;
   this->modelMatrix = modelMatrix;
 
   objectLoaded = false;
@@ -13,18 +13,14 @@ Model::Model(std::string fileName, Light &light, glm::mat4 modelMatrix)
   objectLoaded = loadObject(fileName);
 
   if (objectLoaded)
-  {
-    std::cout << "Object " << fileName << " loaded successfully" << std::endl;
     createDisplayList();
-  }
   else
-  {
     std::cout << "Error loading object " << fileName << std::endl;
-  }
 }
 
 Model::~Model()
 {
+  glDeleteLists(displayList, 1);
 }
 
 void Model::draw()
@@ -49,16 +45,15 @@ void Model::createDisplayList()
 void Model::drawFace(Face &face)
 {
   if (face.isQuad)
-    glBegin(GL_QUADS);
+    glBegin(GL_POLYGON);
   else
     glBegin(GL_TRIANGLES);
 
   for (int v = 0; v < face.vertices.size(); v++)
   {
-    glm::vec3 illum = light->calculateIllumination(face.vertices[v], face.normals[v], modelMatrix);
-
+    glm::vec3 illum = Light::calculateIllumination(lights, face.vertices[v], face.normals[v], modelMatrix);
     glColor3f(illum.x, illum.y, illum.z);
-
+    
     if (face.texCoords.size() > 0)
       glTexCoord2f(face.texCoords[v].x, face.texCoords[v].y);
     if (face.normals.size() > 0)

@@ -4,6 +4,7 @@
 #include <glm/mat4x4.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <GL/gl.h>
+#include <vector>
 
 class Light
 {
@@ -13,12 +14,17 @@ private:
   glm::vec3 diffuse;
   glm::vec3 specular;
 
+  bool isOn = true;
+
 public:
   Light(glm::vec3 position, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular);
   virtual ~Light();
 
   glm::vec3 calculateIllumination(const glm::vec3 &position, const glm::vec3 &normal, const glm::mat4 &modelMatrix);
+  static glm::vec3 calculateIllumination(std::vector<Light *> lights, const glm::vec3 &position, const glm::vec3 &normal, const glm::mat4 &modelMatrix);
   void draw();
+
+  void toggle() { isOn = !isOn; }
 
   glm::vec3 getPosition() { return position; }
   glm::vec3 getAmbient() { return ambient; }

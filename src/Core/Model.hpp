@@ -30,7 +30,7 @@ struct Face
 class Model
 {
 public:
-  Model(std::string fileName, Light &light, glm::mat4 modelMatrix = glm::mat4(1.0f));
+  Model(std::string fileName, std::vector<Light *> lights, glm::mat4 modelMatrix = glm::mat4(1.0f));
   virtual ~Model();
 
   void draw();
@@ -48,7 +48,7 @@ public:
   void setModelMatrix(glm::mat4 modelMatrix) { this->modelMatrix = modelMatrix; }
 
 private:
-  Light *light;
+  std::vector<Light *> lights;
 
   glm::mat4 modelMatrix;
 

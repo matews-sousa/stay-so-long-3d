@@ -11,7 +11,7 @@ sf::RenderWindow *Game::window;
 Camera *Game::camera;
 float Game::deltaTime;
 std::map<std::string, Model *> Game::models;
-Light *Game::light;
+std::vector<Light *> Game::lights;
 
 Game::Game()
 {
@@ -28,15 +28,13 @@ Game::Game()
 
   player = new Player(glm::vec3(0.0f, 100.0f, 0.0f), glm::vec3(15.0f, 15.0f, 15.0f));
 
-  light = new Light(glm::vec3(500.0f, 500.0f, 500.0f), glm::vec3(0.2f, 0.2f, 0.2f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f));
-  
   projectionMatrix = glm::mat4(1.0f);
   viewMatrix = glm::mat4(1.0f);
 
   init();
+  initLights();
   initTextures();
   initObjModels();
-
 }
 
 Game::~Game()
@@ -59,10 +57,17 @@ void Game::initTextures()
 
 void Game::initObjModels()
 {
-  models["cube"] = new Model("../src/Assets/Models/cube.obj", *light);
-  models["mecha"] = new Model("../src/Assets/Models/mecha.obj", *light);
-  models["spaceship"] = new Model("../src/Assets/Models/Spaceship6.obj", *light);
-  models["building"] = new Model("../src/Assets/Models/building.obj", *light);
+  models["cube"] = new Model("../src/Assets/Models/cube.obj", lights);
+  models["mecha"] = new Model("../src/Assets/Models/mecha.obj", lights);
+  models["spaceship"] = new Model("../src/Assets/Models/Spaceship6.obj", lights);
+  models["building"] = new Model("../src/Assets/Models/building.obj", lights);
+}
+
+void Game::initLights()
+{
+  lights.push_back(new Light(glm::vec3(200.0f, 200.0f, 200.0f), glm::vec3(0.2f, 0.2f, 0.2f), glm::vec3(1.0f, 0.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f)));
+  lights.push_back(new Light(glm::vec3(200.0f, 200.0f, 200.0f), glm::vec3(0.2f, 0.2f, 0.2f), glm::vec3(1.0f, 1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f)));
+  lights.push_back(new Light(glm::vec3(1000.0f, 200.0f, 1000.0f), glm::vec3(0.2f, 0.2f, 0.2f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f)));
 }
 
 void Game::init()
@@ -87,20 +92,6 @@ void Game::init()
   glEnable(GL_DEPTH_TEST);
 
   glEnable(GL_TEXTURE_2D);
-
-/*   glEnable(GL_LIGHTING);
-  glEnable(GL_LIGHT0);
-  glEnable(GL_COLOR_MATERIAL);
-
-  GLfloat lightPosition[] = { 700.0f, 500.0f, -700.0f, 1.0f };
-  GLfloat lightAmbient[] = { 0.1f, 0.1f, 0.1f, 1.0f };
-  GLfloat lightDiffuse[] = { 2.0f, 2.0f, 2.0f, 1.0f };
-  GLfloat lightSpecular[] = { 1.0f, 1.0f, 1.0f, 1.0f };
-
-  glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
-  glLightfv(GL_LIGHT0, GL_AMBIENT, lightAmbient);
-  glLightfv(GL_LIGHT0, GL_DIFFUSE, lightDiffuse);
-  glLightfv(GL_LIGHT0, GL_SPECULAR, lightSpecular); */
 }
 
 void Game::run()
@@ -127,10 +118,25 @@ void Game::update()
 
   // make the light position rotate around the origin
   lightAngle += 0.1f;
-  GLfloat lightPosition[] = { 500.0f * cosf(lightAngle), 500.0f, 500.0f * sinf(lightAngle), 1.0f };
-  glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
 
-  light->setPosition(glm::vec3(lightPosition[0], lightPosition[1], lightPosition[2]));
+  lights[0]->setPosition(glm::vec3(200.0f * cos(lightAngle), 200.0f, 200.0f * sin(lightAngle)));
+  lights[1]->setPosition(glm::vec3(200.0f * -cos(lightAngle), 200.0f, 200.0f * -sin(lightAngle)));
+
+  if (Input::isKeyPressed(sf::Keyboard::Num1))
+  {
+    lights[0]->toggle();
+    Input::setKeyPressed(sf::Keyboard::Num1, false);
+  }
+  else if (Input::isKeyPressed(sf::Keyboard::Num2))
+  {
+    lights[1]->toggle();
+    Input::setKeyPressed(sf::Keyboard::Num2, false);
+  }
+  else if (Input::isKeyPressed(sf::Keyboard::Num3))
+  {
+    lights[2]->toggle();
+    Input::setKeyPressed(sf::Keyboard::Num3, false);
+  }
 
   player->update();
   deltaTime = clock.restart().asSeconds();
@@ -165,25 +171,25 @@ void Game::render()
     {
       glBegin(GL_TRIANGLE_STRIP);
 
-      glm::vec3 illum1 = light->calculateIllumination(glm::vec3(x, 0.0f, z), glm::vec3(0.0f, 1.0f, 0.0f), modelMatrix);
-      glColor3fv(glm::value_ptr(illum1));
+      glm::vec3 illum = Light::calculateIllumination(lights, glm::vec3(x, 0.0f, z), glm::vec3(0.0f, 1.0f, 0.0f), modelMatrix);
+      glColor3fv(glm::value_ptr(illum));
       glNormal3f(0.0f, 1.0f, 0.0f);
       glTexCoord2f(0.0f, 0.0f);
       glVertex3f(x, 0.0f, z);
 
-      glm::vec3 illum2 = light->calculateIllumination(glm::vec3(x, 0.0f, z + 100), glm::vec3(0.0f, 1.0f, 0.0f), modelMatrix);
+      glm::vec3 illum2 = Light::calculateIllumination(lights, glm::vec3(x, 0.0f, z + 100), glm::vec3(0.0f, 1.0f, 0.0f), modelMatrix);
       glColor3fv(glm::value_ptr(illum2));
       glNormal3f(0.0f, 1.0f, 0.0f);
       glTexCoord2f(0.0f, 1.0f);
       glVertex3f(x, 0.0f, z + 100);
 
-      glm::vec3 illum3 = light->calculateIllumination(glm::vec3(x + 100, 0.0f, z), glm::vec3(0.0f, 1.0f, 0.0f), modelMatrix);
+      glm::vec3 illum3 = Light::calculateIllumination(lights, glm::vec3(x + 100, 0.0f, z), glm::vec3(0.0f, 1.0f, 0.0f), modelMatrix);
       glColor3fv(glm::value_ptr(illum3));
       glNormal3f(0.0f, 1.0f, 0.0f);
       glTexCoord2f(1.0f, 0.0f);
       glVertex3f(x + 100, 0.0f, z);
 
-      glm::vec3 illum4 = light->calculateIllumination(glm::vec3(x + 100, 0.0f, z + 100), glm::vec3(0.0f, 1.0f, 0.0f), modelMatrix);
+      glm::vec3 illum4 = Light::calculateIllumination(lights, glm::vec3(x + 100, 0.0f, z + 100), glm::vec3(0.0f, 1.0f, 0.0f), modelMatrix);
       glColor3fv(glm::value_ptr(illum4));
       glNormal3f(0.0f, 1.0f, 0.0f);
       glTexCoord2f(1.0f, 1.0f);
@@ -228,7 +234,8 @@ void Game::render()
 
   player->draw();
 
-  light->draw();
+  for (auto &light : lights)
+    light->draw();
 
   window->display();
 }

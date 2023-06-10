@@ -21,6 +21,7 @@ private:
 
   void initTextures();
   void initObjModels();
+  void initLights();
   void init();
   void update();
   void render();
@@ -36,5 +37,5 @@ public:
   static Camera *camera;
   static float deltaTime;
   static std::map<std::string, Model *> models;
-  static Light *light;
+  static std::vector<Light *> lights;
 };
