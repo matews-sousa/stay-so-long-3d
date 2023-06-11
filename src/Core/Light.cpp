@@ -22,22 +22,22 @@ glm::vec3 Light::calculateIllumination(const glm::vec3 &vertexPosition, const gl
   glm::vec3 transformedPosition = glm::vec3(modelMatrix * glm::vec4(vertexPosition, 1.0f)); // Transform position to world space
 
   // Calculate light direction
-  glm::vec3 lightDirection = glm::normalize(position - transformedPosition);
+  glm::vec3 lightDirection = glm::normalize(this->position - transformedPosition);
 
-  float ambientIntensity = 0.1f; // Default ambient intensity
+  // diffuse
+  float nDot1 = glm::dot(transformedNormal, lightDirection);
+  float brightness = glm::max(nDot1, 0.0f);
+  glm::vec3 diff = this->diffuse * brightness;
+  
+  // specular
+  glm::vec3 toCameraVector = glm::vec3(glm::inverse(viewMatrix) * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f)) - transformedPosition;
+  toCameraVector = glm::normalize(toCameraVector);
+  glm::vec3 reflectionVector = glm::reflect(-lightDirection, transformedNormal);
+  float specularFactor = glm::max(glm::dot(toCameraVector, reflectionVector), 0.0f);
+  specularFactor = glm::pow(specularFactor, 32.0f);
+  glm::vec3 spec = this->specular * specularFactor;
 
-  // Calculate diffuse intensity
-  float diffuseIntensity = glm::max(glm::dot(transformedNormal, lightDirection), 0.0f);
-
-  // Calculate specular intensity
-  glm::vec3 viewDirection = glm::normalize(-transformedPosition);
-  glm::vec3 reflectDirection = glm::reflect(-lightDirection, transformedNormal);
-  float specularIntensity = glm::pow(glm::max(glm::dot(viewDirection, reflectDirection), 0.0f), 32.0f);
-
-  // Calculate final illumination using Phong lighting model
-  glm::vec3 illumination = ambient * ambientIntensity + diffuse * diffuseIntensity + specular * specularIntensity;
-
-  return illumination;
+  return ambient + diff + spec;
 }
 
 glm::vec3 Light::calculateIllumination(std::vector<Light *> lights, const glm::vec3 &position, const glm::vec3 &normal, const glm::mat4 &modelMatrix)

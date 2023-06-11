@@ -65,9 +65,13 @@ void Game::initObjModels()
 
 void Game::initLights()
 {
-  lights.push_back(new Light(glm::vec3(200.0f, 200.0f, 200.0f), glm::vec3(0.2f, 0.2f, 0.2f), glm::vec3(1.0f, 0.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f)));
-  lights.push_back(new Light(glm::vec3(200.0f, 200.0f, 200.0f), glm::vec3(0.2f, 0.2f, 0.2f), glm::vec3(1.0f, 1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f)));
+  lights.push_back(new Light(glm::vec3(200.0f, 200.0f, 200.0f), glm::vec3(0.2f, 0.2f, 0.2f), glm::vec3(1.0f, 0.0f, 1.0f), glm::vec3(1.0f, 0.0f, 1.0f)));
+  lights.push_back(new Light(glm::vec3(200.0f, 200.0f, 200.0f), glm::vec3(0.2f, 0.2f, 0.2f), glm::vec3(1.0f, 1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 0.0f)));
   lights.push_back(new Light(glm::vec3(1000.0f, 200.0f, 1000.0f), glm::vec3(0.2f, 0.2f, 0.2f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f)));
+  lights.push_back(new Light(player->getPosition(), glm::vec3(0.2f, 0.2f, 0.2f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f)));
+
+  for (auto &light : lights)
+    light->setViewMatrix(viewMatrix);
 }
 
 void Game::init()
@@ -116,6 +120,11 @@ void Game::update()
   glLoadIdentity();
   glMultMatrixf(glm::value_ptr(viewMatrix));
 
+  for (auto &light : lights)
+  {
+    light->setViewMatrix(viewMatrix);
+  }
+
   // make the light position rotate around the origin
   lightAngle += 0.1f;
 
@@ -139,6 +148,8 @@ void Game::update()
   }
 
   player->update();
+  lights[3]->setPosition(player->getPosition() + glm::vec3(0.0f, 50.0f, 0.0f));
+
   deltaTime = clock.restart().asSeconds();
 }
 
@@ -215,6 +226,7 @@ void Game::render()
   Texture::bindByName("building");
   modelMatrix = glm::mat4(1.0f);
   modelMatrix = glm::translate(modelMatrix, glm::vec3(150.0f, 0.0f, 150.0f));
+  modelMatrix = glm::rotate(modelMatrix, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
   modelMatrix = glm::scale(modelMatrix, glm::vec3(25.0f, 25.0f, 25.0f));
   glPushMatrix();
   glMultMatrixf(glm::value_ptr(modelMatrix));

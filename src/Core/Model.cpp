@@ -49,11 +49,10 @@ void Model::drawFace(Face &face)
   else
     glBegin(GL_TRIANGLES);
 
+  glm::vec3 illum = Light::calculateIllumination(lights, face.faceCenter, face.faceNormal, modelMatrix);
+  glColor3f(illum.x, illum.y, illum.z);
   for (int v = 0; v < face.vertices.size(); v++)
   {
-    glm::vec3 illum = Light::calculateIllumination(lights, face.vertices[v], face.normals[v], modelMatrix);
-    glColor3f(illum.x, illum.y, illum.z);
-    
     if (face.texCoords.size() > 0)
       glTexCoord2f(face.texCoords[v].x, face.texCoords[v].y);
     if (face.normals.size() > 0)
@@ -161,6 +160,17 @@ bool Model::loadObject(std::string fileName)
     newFace.normals.push_back(normals[indexNormals[i] - 1]);
     newFace.texCoords.push_back(texCoords[indexTexCoords[i] - 1]);
   }
+
+  if (newFace.isQuad)
+  {
+    // use the vertex counter to calculate the center of the face
+    for (int i = 0; i < vertexCounter; i++)
+      newFace.faceCenter += newFace.vertices[i];
+    newFace.faceCenter /= vertexCounter;
+  }
+  else
+    newFace.faceCenter = (newFace.vertices[0] + newFace.vertices[1] + newFace.vertices[2]) / 3.0f;
+  newFace.faceNormal = glm::normalize(glm::cross(newFace.vertices[1] - newFace.vertices[0], newFace.vertices[2] - newFace.vertices[0]));
 
   faces.push_back(newFace);
 
