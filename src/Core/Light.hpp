@@ -6,6 +6,13 @@
 #include <GL/gl.h>
 #include <vector>
 
+enum LightType
+{
+  POINT_LIGHT,
+  DIRECTIONAL_LIGHT,
+  SPOT_LIGHT
+};
+
 class Light
 {
 private:
@@ -17,9 +24,11 @@ private:
   glm::mat4 viewMatrix;
 
   bool isOn = true;
+  LightType type = POINT_LIGHT;
 
 public:
   Light(glm::vec3 position, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular);
+  Light(glm::vec3 position, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, LightType type);
   virtual ~Light();
 
   glm::vec3 calculateIllumination(const glm::vec3 &position, const glm::vec3 &normal, const glm::mat4 &modelMatrix);

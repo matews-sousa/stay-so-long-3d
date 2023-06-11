@@ -8,6 +8,15 @@ Light::Light(glm::vec3 position, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3
   this->specular = specular;
 }
 
+Light::Light(glm::vec3 position, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, LightType type)
+{
+  this->position = position;
+  this->ambient = ambient;
+  this->diffuse = diffuse;
+  this->specular = specular;
+  this->type = type;
+}
+
 Light::~Light()
 {
 }
@@ -17,6 +26,11 @@ glm::vec3 Light::calculateIllumination(const glm::vec3 &vertexPosition, const gl
   if (!isOn)
     return glm::vec3(0.0f);
 
+  if (type == DIRECTIONAL_LIGHT)
+  {
+    return diffuse;
+  }
+
   glm::vec3 transformedNormal = glm::vec3(modelMatrix * glm::vec4(normal, 0.0f)); // Transform normal to world space
   transformedNormal = glm::normalize(transformedNormal); // Normalize normal
   glm::vec3 transformedPosition = glm::vec3(modelMatrix * glm::vec4(vertexPosition, 1.0f)); // Transform position to world space
@@ -24,10 +38,21 @@ glm::vec3 Light::calculateIllumination(const glm::vec3 &vertexPosition, const gl
   // Calculate light direction
   glm::vec3 lightDirection = glm::normalize(this->position - transformedPosition);
 
+  float intensity = 1.0f;
+
+  if (type == SPOT_LIGHT)
+  {
+    float outerCone = 0.90f;
+    float innerCone = 0.95f;
+
+    float angle = glm::dot(glm::vec3(0.0f, -1.0f, 0.0f), -lightDirection);
+    intensity = glm::clamp((angle - outerCone) / (innerCone - outerCone), 0.0f, 1.0f);
+  }
+
   // diffuse
   float nDot1 = glm::dot(transformedNormal, lightDirection);
   float brightness = glm::max(nDot1, 0.0f);
-  glm::vec3 diff = this->diffuse * brightness;
+  glm::vec3 diff = this->diffuse * brightness * intensity;
   
   // specular
   glm::vec3 toCameraVector = glm::vec3(glm::inverse(viewMatrix) * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f)) - transformedPosition;
@@ -35,7 +60,7 @@ glm::vec3 Light::calculateIllumination(const glm::vec3 &vertexPosition, const gl
   glm::vec3 reflectionVector = glm::reflect(-lightDirection, transformedNormal);
   float specularFactor = glm::max(glm::dot(toCameraVector, reflectionVector), 0.0f);
   specularFactor = glm::pow(specularFactor, 32.0f);
-  glm::vec3 spec = this->specular * specularFactor;
+  glm::vec3 spec = this->specular * specularFactor * intensity;
 
   return ambient + diff + spec;
 }

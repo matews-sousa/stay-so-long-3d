@@ -52,22 +52,20 @@ void Game::initTextures()
   texture = new Texture("../src/Assets/Textures/awesomeface.png", "awesomeface");
   texture = new Texture("../src/Assets/Textures/Mecha01.png", "mecha");
   texture = new Texture("../src/Assets/Textures/TallBuilding01.png", "building");
-  texture = new Texture("../src/Assets/Textures/spaceship6_normal_tangent_bevel.png", "spaceship");
 }
 
 void Game::initObjModels()
 {
   models["cube"] = new Model("../src/Assets/Models/cube.obj", lights);
   models["mecha"] = new Model("../src/Assets/Models/mecha.obj", lights);
-  models["spaceship"] = new Model("../src/Assets/Models/Spaceship6.obj", lights);
   models["building"] = new Model("../src/Assets/Models/building.obj", lights);
 }
 
 void Game::initLights()
 {
-  lights.push_back(new Light(glm::vec3(200.0f, 200.0f, 200.0f), glm::vec3(0.2f, 0.2f, 0.2f), glm::vec3(1.0f, 0.0f, 1.0f), glm::vec3(1.0f, 0.0f, 1.0f)));
-  lights.push_back(new Light(glm::vec3(200.0f, 200.0f, 200.0f), glm::vec3(0.2f, 0.2f, 0.2f), glm::vec3(1.0f, 1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 0.0f)));
-  lights.push_back(new Light(glm::vec3(1000.0f, 200.0f, 1000.0f), glm::vec3(0.2f, 0.2f, 0.2f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f)));
+  lights.push_back(new Light(glm::vec3(200.0f, 1000.0f, 200.0f), glm::vec3(0.2f, 0.2f, 0.2f), glm::vec3(1.0f, 0.0f, 1.0f), glm::vec3(1.0f, 0.0f, 1.0f), LightType::SPOT_LIGHT));
+  lights.push_back(new Light(glm::vec3(200.0f, 500.0f, 200.0f), glm::vec3(0.2f, 0.2f, 0.2f), glm::vec3(1.0f, 1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 0.0f), LightType::SPOT_LIGHT));
+  lights.push_back(new Light(glm::vec3(1000.0f, 200.0f, 1000.0f), glm::vec3(0.1f, 0.1f, 0.1f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f)));
   lights.push_back(new Light(player->getPosition(), glm::vec3(0.2f, 0.2f, 0.2f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f)));
 
   for (auto &light : lights)
@@ -128,8 +126,8 @@ void Game::update()
   // make the light position rotate around the origin
   lightAngle += 0.1f;
 
-  lights[0]->setPosition(glm::vec3(200.0f * cos(lightAngle), 200.0f, 200.0f * sin(lightAngle)));
-  lights[1]->setPosition(glm::vec3(200.0f * -cos(lightAngle), 200.0f, 200.0f * -sin(lightAngle)));
+  lights[0]->setPosition(glm::vec3(200.0f * cos(lightAngle), 1000.0f, 200.0f * sin(lightAngle)));
+  lights[1]->setPosition(glm::vec3(200.0f * -cos(lightAngle), 500.0f, 200.0f * -sin(lightAngle)));
 
   if (Input::isKeyPressed(sf::Keyboard::Num1))
   {
@@ -146,6 +144,11 @@ void Game::update()
     lights[2]->toggle();
     Input::setKeyPressed(sf::Keyboard::Num3, false);
   }
+  else if (Input::isKeyPressed(sf::Keyboard::Num4))
+  {
+    lights[3]->toggle();
+    Input::setKeyPressed(sf::Keyboard::Num4, false);
+  }
 
   player->update();
   lights[3]->setPosition(player->getPosition() + glm::vec3(0.0f, 50.0f, 0.0f));
@@ -153,6 +156,7 @@ void Game::update()
   deltaTime = clock.restart().asSeconds();
 }
 
+float inc = 100.0f;
 void Game::render()
 {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -176,9 +180,9 @@ void Game::render()
   //modelMatrix = glm::translate(modelMatrix, glm::vec3(-1000.0f, 0.0f, -1000.0f));
   glPushMatrix();
   glMultMatrixf(glm::value_ptr(modelMatrix));
-  for (int x = -2000; x < 2000; x += 100)
+  for (int x = -2000; x < 2000; x += inc)
   {
-    for (int z = -2000; z < 2000; z += 100)
+    for (int z = -2000; z < 2000; z += inc)
     {
       glBegin(GL_TRIANGLE_STRIP);
 
@@ -188,23 +192,23 @@ void Game::render()
       glTexCoord2f(0.0f, 0.0f);
       glVertex3f(x, 0.0f, z);
 
-      glm::vec3 illum2 = Light::calculateIllumination(lights, glm::vec3(x, 0.0f, z + 100), glm::vec3(0.0f, 1.0f, 0.0f), modelMatrix);
+      glm::vec3 illum2 = Light::calculateIllumination(lights, glm::vec3(x, 0.0f, z + inc), glm::vec3(0.0f, 1.0f, 0.0f), modelMatrix);
       glColor3fv(glm::value_ptr(illum2));
       glNormal3f(0.0f, 1.0f, 0.0f);
       glTexCoord2f(0.0f, 1.0f);
-      glVertex3f(x, 0.0f, z + 100);
+      glVertex3f(x, 0.0f, z + inc);
 
-      glm::vec3 illum3 = Light::calculateIllumination(lights, glm::vec3(x + 100, 0.0f, z), glm::vec3(0.0f, 1.0f, 0.0f), modelMatrix);
+      glm::vec3 illum3 = Light::calculateIllumination(lights, glm::vec3(x + inc, 0.0f, z), glm::vec3(0.0f, 1.0f, 0.0f), modelMatrix);
       glColor3fv(glm::value_ptr(illum3));
       glNormal3f(0.0f, 1.0f, 0.0f);
       glTexCoord2f(1.0f, 0.0f);
-      glVertex3f(x + 100, 0.0f, z);
+      glVertex3f(x + inc, 0.0f, z);
 
-      glm::vec3 illum4 = Light::calculateIllumination(lights, glm::vec3(x + 100, 0.0f, z + 100), glm::vec3(0.0f, 1.0f, 0.0f), modelMatrix);
+      glm::vec3 illum4 = Light::calculateIllumination(lights, glm::vec3(x + inc, 0.0f, z + inc), glm::vec3(0.0f, 1.0f, 0.0f), modelMatrix);
       glColor3fv(glm::value_ptr(illum4));
       glNormal3f(0.0f, 1.0f, 0.0f);
       glTexCoord2f(1.0f, 1.0f);
-      glVertex3f(x + 100, 0.0f, z + 100);
+      glVertex3f(x + inc, 0.0f, z + inc);
 
       glEnd();
     }
@@ -232,16 +236,6 @@ void Game::render()
   glMultMatrixf(glm::value_ptr(modelMatrix));
   models["building"]->setModelMatrix(modelMatrix);
   models["building"]->draw();
-  glPopMatrix();
-
-  Texture::bindByName("spaceship");
-  modelMatrix = glm::mat4(1.0f);
-  modelMatrix = glm::translate(modelMatrix, glm::vec3(-150.0f, 25.0f, -150.0f));
-  modelMatrix = glm::scale(modelMatrix, glm::vec3(25.0f, 25.0f, 25.0f));
-  glPushMatrix();
-  glMultMatrixf(glm::value_ptr(modelMatrix));
-  models["spaceship"]->setModelMatrix(modelMatrix);
-  models["spaceship"]->draw();
   glPopMatrix();
 
   player->draw();
