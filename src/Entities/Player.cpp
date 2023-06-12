@@ -84,6 +84,10 @@ void Player::update()
   this->look(direction);
 
   updateLocalMatrix();
+
+  position.y -= 9.8f * Game::deltaTime;
+  if (position.y <= 0.0f)
+    position.y = 0.0f;
 }
 
 void Player::move(glm::vec3 direction)

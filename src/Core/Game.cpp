@@ -5,13 +5,15 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include "../primitives.hpp"
-#include "Texture.hpp"
-#include "Model.hpp"
 
 sf::RenderWindow *Game::window;
 Camera *Game::camera;
 float Game::deltaTime;
 std::map<std::string, Model *> Game::models;
+
+Light *mainLight = nullptr;
+Light *secondLight = nullptr;
+Light *thirdLight = nullptr;
 
 Game::Game()
 {
@@ -27,6 +29,19 @@ Game::Game()
   window->setPosition(sf::Vector2i((desktop.width - window->getSize().x) / 2, (desktop.height - window->getSize().y) / 2));
 
   player = new Player(glm::vec3(0.0f, 35.0f, 0.0f), glm::vec3(15.0f, 15.0f, 15.0f));
+
+  Light::initLights();
+
+  mainLight = new Light(LIGHT_SPOT);
+  mainLight->setPosition(glm::vec4(100.0f, 200.0f, 100.0f, 1.0f));
+  mainLight->setDiffuse(glm::vec4(1.0f, 0.235f, 0.654f, 1.0f));
+
+  secondLight = new Light(LIGHT_SPOT);
+  secondLight->setPosition(glm::vec4(-100.0f, 200.0f, -100.0f, 1.0f));
+  secondLight->setDiffuse(glm::vec4(0.0f, 0.235f, 1.0f, 1.0f));
+
+  thirdLight = new Light(LIGHT_POINT);
+  thirdLight->setPosition(glm::vec4(player->getPosition(), 1.0f));
 
   init();
   initTextures();
@@ -83,18 +98,7 @@ void Game::init()
   glEnable(GL_TEXTURE_2D);
 
   glEnable(GL_LIGHTING);
-  glEnable(GL_LIGHT0);
   glEnable(GL_COLOR_MATERIAL);
-
-  GLfloat lightPosition[] = { 700.0f, 500.0f, -700.0f, 1.0f };
-  GLfloat lightAmbient[] = { 0.1f, 0.1f, 0.1f, 1.0f };
-  GLfloat lightDiffuse[] = { 2.0f, 2.0f, 2.0f, 1.0f };
-  GLfloat lightSpecular[] = { 1.0f, 1.0f, 1.0f, 1.0f };
-
-  glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
-  glLightfv(GL_LIGHT0, GL_AMBIENT, lightAmbient);
-  glLightfv(GL_LIGHT0, GL_DIFFUSE, lightDiffuse);
-  glLightfv(GL_LIGHT0, GL_SPECULAR, lightSpecular);
 }
 
 void Game::run()
@@ -121,13 +125,44 @@ void Game::update()
 
   // make the light position rotate around the origin
   lightAngle += 0.1f;
-  GLfloat lightPosition[] = { 700.0f * cosf(lightAngle), 500.0f, 700.0f * sinf(lightAngle), 1.0f };
-  glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
+  glm::vec4 lightPosition = glm::vec4(350.0f * cosf(lightAngle), 500.0f, 350.0f * sinf(lightAngle), 1.0f);
+  mainLight->setPosition(lightPosition);
+  secondLight->setPosition(glm::vec4(-350.0f * cosf(lightAngle), 500.0f, -350.0f * sinf(lightAngle), 1.0f));
+
+  if (Input::isKeyPressed(sf::Keyboard::Num1))
+  {
+    mainLight->toggleVisible();
+    Input::setKeyPressed(sf::Keyboard::Num1, false);
+  }
+  else if (Input::isKeyPressed(sf::Keyboard::Num2))
+  {
+    secondLight->toggleVisible();
+    Input::setKeyPressed(sf::Keyboard::Num2, false);
+  }
+
+  if (Input::isKeyPressed(sf::Keyboard::Space))
+  {
+    if (mainLight->getLightType() == LIGHT_POINT)
+    {
+      mainLight->setLightType(LIGHT_SPOT);
+      secondLight->setLightType(LIGHT_SPOT);
+    }
+    else
+    {
+      mainLight->setLightType(LIGHT_POINT);
+      secondLight->setLightType(LIGHT_POINT);
+    }
+
+    Input::setKeyPressed(sf::Keyboard::Space, false);
+  }
 
   player->update();
+  thirdLight->setPosition(glm::vec4(player->getPosition() + glm::vec3(0.0f, 15.0f, 0.0f), 1.0f));
+
   deltaTime = clock.restart().asSeconds();
 }
 
+int increment = 50;
 void Game::render()
 {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -148,12 +183,28 @@ void Game::render()
   glColor3f(1.0f, 1.0f, 1.0f);
 
   Texture::bindByName("wall");
-  glBindTexture(GL_TEXTURE_2D, 0);
-  glPushMatrix();
-  glTranslatef(0.0f, -100.0f, 0.0f);
-  glScalef(200.0f, 200.0f, 200.0f);
-  models["cube"]->draw();
-  glPopMatrix();
+  for (int i = -4000; i < 4000; i += increment)
+  {
+    for (int j = -4000; j < 4000; j += increment)
+    {
+      glBegin(GL_TRIANGLE_STRIP);
+      glTexCoord2f(0.0f, 0.0f);
+      glNormal3f(0.0f, 1.0f, 0.0f);
+      glVertex3f(i, 0.0f, j);
+      
+      glTexCoord2f(1.0f, 0.0f);
+      glNormal3f(0.0f, 1.0f, 0.0f);
+      glVertex3f(i + increment, 0.0f, j);
+
+      glTexCoord2f(0.0f, 1.0f);
+      glVertex3f(i, 0.0f, j + increment);
+
+      glTexCoord2f(1.0f, 1.0f);
+      glNormal3f(0.0f, 1.0f, 0.0f);
+      glVertex3f(i + increment, 0.0f, j + increment);
+      glEnd();
+    }
+  }
 
   Texture::bindByName("mecha");
   glPushMatrix();
@@ -177,6 +228,8 @@ void Game::render()
   glPopMatrix();
 
   player->draw();
+
+  mainLight->drawLight();
 
   window->display();
 }
