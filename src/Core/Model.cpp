@@ -12,7 +12,6 @@ Model::Model(std::string fileName)
 
   if (objectLoaded)
   {
-    std::cout << "Object " << fileName << " loaded successfully" << std::endl;
     createDisplayList();
   }
   else
