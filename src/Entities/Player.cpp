@@ -1,14 +1,4 @@
 #include "Player.hpp"
-#include "../Core/Input.hpp"
-#include <GL/gl.h>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-#include <glm/gtc/quaternion.hpp>
-#include <glm/gtx/string_cast.hpp>
-#include "../primitives.hpp"
-#include <iostream>
-#include "../Core/Game.hpp"
-#include "../Core/Input.hpp"
 
 Player::Player(glm::vec3 position, glm::vec3 scale) : GameObject(position, scale)
 {

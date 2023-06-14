@@ -1,7 +1,16 @@
 #pragma once
 
+#include <iostream>
 #include <glm/glm.hpp>
+#include <GL/gl.h>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <glm/gtc/quaternion.hpp>
+#include <glm/gtx/string_cast.hpp>
 #include "GameObject.hpp"
+#include "../Core/Game.hpp"
+#include "../Core/Input.hpp"
+#include "../Core/MousePicker.hpp"
 
 class Player : public GameObject
 {

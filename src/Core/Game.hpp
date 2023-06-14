@@ -1,22 +1,35 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include "Camera.hpp"
+#include <GL/gl.h>
+#include <iostream>
 #include <vector>
 #include <map>
 #include <string>
+#include <glm/mat4x4.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include "Camera.hpp"
 #include "Texture.hpp"
+#include "Input.hpp"
 #include "Model.hpp"
 #include "Light.hpp"
+#include "MousePicker.hpp"
 #include "../Entities/Player.hpp"
 #include "../Entities/Terrain.hpp"
+#include "../primitives.hpp"
+
+class Player;
 
 class Game
 {
 private:
+  glm::mat4 projectionMatrix;
+  glm::mat4 viewMatrix;
   sf::Clock clock;
   sf::Event event;
   Player *player;
+  MousePicker *picker;
 
   void initTextures();
   void initObjModels();
