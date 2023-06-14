@@ -5,6 +5,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <GL/gl.h>
 #include <vector>
+#include "Utils.hpp"
 
 enum LightType
 {
@@ -21,6 +22,7 @@ private:
   glm::vec3 diffuse;
   glm::vec3 specular;
 
+  glm::mat4 projectionMatrix;
   glm::mat4 viewMatrix;
 
   bool isOn = true;
@@ -47,4 +49,5 @@ public:
   void setDiffuse(glm::vec3 diffuse) { this->diffuse = diffuse; }
   void setSpecular(glm::vec3 specular) { this->specular = specular; }
   void setViewMatrix(glm::mat4 viewMatrix) { this->viewMatrix = viewMatrix; }
+  void setProjectionMatrix(glm::mat4 projectionMatrix) { this->projectionMatrix = projectionMatrix; }
 };

@@ -121,6 +121,7 @@ void Game::update()
   for (auto &light : lights)
   {
     light->setViewMatrix(viewMatrix);
+    light->setProjectionMatrix(projectionMatrix);
   }
 
   // make the light position rotate around the origin
@@ -224,7 +225,7 @@ void Game::render()
   glPushMatrix();
   glMultMatrixf(glm::value_ptr(modelMatrix));
   models["mecha"]->setModelMatrix(modelMatrix);
-  models["mecha"]->draw();
+  models["mecha"]->createDisplayList();
   glPopMatrix();
 
   Texture::bindByName("building");
@@ -235,7 +236,7 @@ void Game::render()
   glPushMatrix();
   glMultMatrixf(glm::value_ptr(modelMatrix));
   models["building"]->setModelMatrix(modelMatrix);
-  models["building"]->draw();
+  models["building"]->createDisplayList();
   glPopMatrix();
 
   player->draw();

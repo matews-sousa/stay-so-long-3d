@@ -31,6 +31,9 @@ glm::vec3 Light::calculateIllumination(const glm::vec3 &vertexPosition, const gl
     return diffuse;
   }
 
+  if (!Utils::isInFrustum(projectionMatrix * viewMatrix * modelMatrix, vertexPosition))
+    return glm::vec3(0.0f);
+
   glm::vec3 transformedNormal = glm::vec3(modelMatrix * glm::vec4(normal, 0.0f)); // Transform normal to world space
   transformedNormal = glm::normalize(transformedNormal); // Normalize normal
   glm::vec3 transformedPosition = glm::vec3(modelMatrix * glm::vec4(vertexPosition, 1.0f)); // Transform position to world space
