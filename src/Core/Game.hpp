@@ -2,13 +2,14 @@
 
 #include <SFML/Graphics.hpp>
 #include "Camera.hpp"
-#include "../Entities/Player.hpp"
 #include <vector>
 #include <map>
 #include <string>
 #include "Texture.hpp"
 #include "Model.hpp"
 #include "Light.hpp"
+#include "../Entities/Player.hpp"
+#include "../Entities/Terrain.hpp"
 
 class Game
 {
@@ -33,5 +34,6 @@ public:
   static sf::RenderWindow *window;
   static Camera *camera;
   static float deltaTime;
+  static Terrain *terrain;
   static std::map<std::string, Model *> models;
 };

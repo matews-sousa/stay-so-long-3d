@@ -20,6 +20,7 @@ set(SOURCES
 
   src/Entities/GameObject.cpp
   src/Entities/Player.cpp
+  src/Entities/Terrain.cpp
 )
 
 # Add the executable

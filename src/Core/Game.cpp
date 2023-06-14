@@ -9,6 +9,7 @@
 sf::RenderWindow *Game::window;
 Camera *Game::camera;
 float Game::deltaTime;
+Terrain *Game::terrain;
 std::map<std::string, Model *> Game::models;
 
 Light *mainLight = nullptr;
@@ -46,6 +47,8 @@ Game::Game()
   init();
   initTextures();
   initObjModels();
+
+  terrain = new Terrain(0, 0);
 }
 
 Game::~Game()
@@ -162,7 +165,6 @@ void Game::update()
   deltaTime = clock.restart().asSeconds();
 }
 
-int increment = 50;
 void Game::render()
 {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -182,29 +184,7 @@ void Game::render()
 
   glColor3f(1.0f, 1.0f, 1.0f);
 
-  Texture::bindByName("wall");
-  for (int i = -4000; i < 4000; i += increment)
-  {
-    for (int j = -4000; j < 4000; j += increment)
-    {
-      glBegin(GL_TRIANGLE_STRIP);
-      glTexCoord2f(0.0f, 0.0f);
-      glNormal3f(0.0f, 1.0f, 0.0f);
-      glVertex3f(i, 0.0f, j);
-      
-      glTexCoord2f(1.0f, 0.0f);
-      glNormal3f(0.0f, 1.0f, 0.0f);
-      glVertex3f(i + increment, 0.0f, j);
-
-      glTexCoord2f(0.0f, 1.0f);
-      glVertex3f(i, 0.0f, j + increment);
-
-      glTexCoord2f(1.0f, 1.0f);
-      glNormal3f(0.0f, 1.0f, 0.0f);
-      glVertex3f(i + increment, 0.0f, j + increment);
-      glEnd();
-    }
-  }
+  terrain->draw();
 
   Texture::bindByName("mecha");
   glPushMatrix();
