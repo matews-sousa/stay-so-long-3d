@@ -71,7 +71,7 @@ void Player::update()
     direction = glm::normalize(direction);
 
   this->move(direction);
-  this->look(direction);
+  this->look();
 
   updateLocalMatrix();
 
@@ -91,15 +91,15 @@ void Player::move(glm::vec3 direction)
   Game::camera->move(velocity);
 }
 
-void Player::look(glm::vec3 direction)
+void Player::look()
 {
-  if (glm::length(direction) == 0.0f)
-    return;
+  glm::vec3 dir = Game::picker->getCurrentTerrainPoint() - this->position;
+  dir.y = 0.0f;
+  dir = glm::normalize(dir);
 
-  glm::vec3 lookDirection = glm::normalize(direction);
-  glm::vec3 right = glm::normalize(glm::cross(lookDirection, up));
+  glm::vec3 right = glm::normalize(glm::cross(dir, up));
 
-  this->forward = lookDirection;
+  this->forward = dir;
   this->right = right;
 }
 

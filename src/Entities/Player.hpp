@@ -29,7 +29,7 @@ public:
 
   void update();
   void move(glm::vec3 direction);
-  void look(glm::vec3 direction);
+  void look();
   void draw();
 
   glm::vec3 getVelocity() { return this->velocity; }

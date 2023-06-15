@@ -2,6 +2,7 @@
 
 sf::RenderWindow *Game::window;
 Camera *Game::camera;
+MousePicker *Game::picker;
 float Game::deltaTime;
 Terrain *Game::terrain;
 std::map<std::string, Model *> Game::models;
@@ -9,6 +10,7 @@ std::map<std::string, Model *> Game::models;
 Light *mainLight = nullptr;
 Light *secondLight = nullptr;
 Light *thirdLight = nullptr;
+Light *sun = nullptr;
 
 Game::Game()
 {
@@ -38,12 +40,17 @@ Game::Game()
   thirdLight = new Light(LIGHT_POINT);
   thirdLight->setPosition(glm::vec4(player->getPosition(), 1.0f));
 
+  sun = new Light(LIGHT_DIRECTIONAL);
+  sun->setDiffuse(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+  sun->setAmbient(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
+  sun->setSpecular(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+
   init();
   initTextures();
   initObjModels();
 
   terrain = new Terrain(0, 0);
-  picker = new MousePicker(projectionMatrix, viewMatrix, *window);
+  picker = new MousePicker(projectionMatrix, viewMatrix, *window, *terrain);
 }
 
 Game::~Game()
@@ -121,12 +128,8 @@ void Game::update()
   glLoadIdentity();
   glMultMatrixf(glm::value_ptr(viewMatrix));
 
-  picker->setViewMatrix(viewMatrix);
-  picker->setProjectionMatrix(projectionMatrix);
-  picker->update();
+  picker->update(projectionMatrix, viewMatrix);
 
-  std::cout << "Mouse raycast: " << picker->getCurrentRay().x << ", " << picker->getCurrentRay().y << ", " << picker->getCurrentRay().z << std::endl;
-  
   // make the light position rotate around the origin
   lightAngle += 0.1f;
   glm::vec4 lightPosition = glm::vec4(350.0f * cosf(lightAngle), 500.0f, 350.0f * sinf(lightAngle), 1.0f);
@@ -145,7 +148,7 @@ void Game::update()
   }
 
   player->update();
-  thirdLight->setPosition(glm::vec4(player->getPosition() + glm::vec3(0.0f, 15.0f, 0.0f), 1.0f));
+  thirdLight->setPosition(glm::vec4(player->getPosition() + glm::vec3(0.0f, 50.0f, 0.0f), 1.0f));
 
   deltaTime = clock.restart().asSeconds();
 }

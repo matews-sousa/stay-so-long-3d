@@ -21,6 +21,8 @@
 
 class Player;
 
+class MousePicker;
+
 class Game
 {
 private:
@@ -29,7 +31,6 @@ private:
   sf::Clock clock;
   sf::Event event;
   Player *player;
-  MousePicker *picker;
 
   void initTextures();
   void initObjModels();
@@ -46,6 +47,7 @@ public:
 
   static sf::RenderWindow *window;
   static Camera *camera;
+  static MousePicker *picker;
   static float deltaTime;
   static Terrain *terrain;
   static std::map<std::string, Model *> models;
