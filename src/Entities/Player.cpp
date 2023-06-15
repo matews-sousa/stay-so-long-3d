@@ -1,14 +1,4 @@
 #include "Player.hpp"
-#include "../Core/Input.hpp"
-#include <GL/gl.h>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-#include <glm/gtc/quaternion.hpp>
-#include <glm/gtx/string_cast.hpp>
-#include "../primitives.hpp"
-#include <iostream>
-#include "../Core/Game.hpp"
-#include "../Core/Input.hpp"
 
 Player::Player(glm::vec3 position, glm::vec3 scale) : GameObject(position, scale)
 {
@@ -81,7 +71,7 @@ void Player::update()
     direction = glm::normalize(direction);
 
   this->move(direction);
-  this->look(direction);
+  this->look();
 
   updateLocalMatrix();
 
@@ -101,15 +91,15 @@ void Player::move(glm::vec3 direction)
   Game::camera->move(velocity);
 }
 
-void Player::look(glm::vec3 direction)
+void Player::look()
 {
-  if (glm::length(direction) == 0.0f)
-    return;
+  glm::vec3 dir = Game::picker->getCurrentTerrainPoint() - this->position;
+  dir.y = 0.0f;
+  dir = glm::normalize(dir);
 
-  glm::vec3 lookDirection = glm::normalize(direction);
-  glm::vec3 right = glm::normalize(glm::cross(lookDirection, up));
+  glm::vec3 right = glm::normalize(glm::cross(dir, up));
 
-  this->forward = lookDirection;
+  this->forward = dir;
   this->right = right;
 }
 

@@ -1,13 +1,8 @@
 #include "Game.hpp"
-#include "Input.hpp"
-#include <iostream>
-#include <GL/gl.h>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-#include "../primitives.hpp"
 
 sf::RenderWindow *Game::window;
 Camera *Game::camera;
+MousePicker *Game::picker;
 float Game::deltaTime;
 Terrain *Game::terrain;
 std::map<std::string, Model *> Game::models;
@@ -15,6 +10,7 @@ std::map<std::string, Model *> Game::models;
 Light *mainLight = nullptr;
 Light *secondLight = nullptr;
 Light *thirdLight = nullptr;
+Light *sun = nullptr;
 
 Game::Game()
 {
@@ -44,11 +40,17 @@ Game::Game()
   thirdLight = new Light(LIGHT_POINT);
   thirdLight->setPosition(glm::vec4(player->getPosition(), 1.0f));
 
+  sun = new Light(LIGHT_DIRECTIONAL);
+  sun->setDiffuse(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+  sun->setAmbient(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
+  sun->setSpecular(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+
   init();
   initTextures();
   initObjModels();
 
   terrain = new Terrain(0, 0);
+  picker = new MousePicker(projectionMatrix, viewMatrix, *window, *terrain);
 }
 
 Game::~Game()
@@ -85,13 +87,13 @@ void Game::init()
   float halfHeight = window->getSize().y / 2.0f;
 
   //glm::mat4 projectionMatrix = glm::ortho(-halfWidth, halfWidth, -halfHeight, halfHeight, 0.1f, 2000.0f);
-  glm::mat4 projectionMatrix = glm::perspective(glm::radians(45.0f), (float)window->getSize().x / (float)window->getSize().y, 0.1f, 2000.0f);
+  projectionMatrix = glm::perspective(glm::radians(45.0f), (float)window->getSize().x / (float)window->getSize().y, 0.1f, 2000.0f);
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
   glMultMatrixf(glm::value_ptr(projectionMatrix));
 
   camera = new Camera(glm::vec3(500.0f, 500.0f, -500.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-  glm::mat4 viewMatrix = camera->getViewMatrix();
+  viewMatrix = camera->getViewMatrix();
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
   glMultMatrixf(glm::value_ptr(viewMatrix));
@@ -121,10 +123,12 @@ void Game::update()
     processEvents();
   }
 
-  glm::mat4 viewMatrix = camera->getViewMatrix();
+  viewMatrix = camera->getViewMatrix();
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
   glMultMatrixf(glm::value_ptr(viewMatrix));
+
+  picker->update(projectionMatrix, viewMatrix);
 
   // make the light position rotate around the origin
   lightAngle += 0.1f;
@@ -143,24 +147,8 @@ void Game::update()
     Input::setKeyPressed(sf::Keyboard::Num2, false);
   }
 
-  if (Input::isKeyPressed(sf::Keyboard::Space))
-  {
-    if (mainLight->getLightType() == LIGHT_POINT)
-    {
-      mainLight->setLightType(LIGHT_SPOT);
-      secondLight->setLightType(LIGHT_SPOT);
-    }
-    else
-    {
-      mainLight->setLightType(LIGHT_POINT);
-      secondLight->setLightType(LIGHT_POINT);
-    }
-
-    Input::setKeyPressed(sf::Keyboard::Space, false);
-  }
-
   player->update();
-  thirdLight->setPosition(glm::vec4(player->getPosition() + glm::vec3(0.0f, 15.0f, 0.0f), 1.0f));
+  thirdLight->setPosition(glm::vec4(player->getPosition() + glm::vec3(0.0f, 50.0f, 0.0f), 1.0f));
 
   deltaTime = clock.restart().asSeconds();
 }

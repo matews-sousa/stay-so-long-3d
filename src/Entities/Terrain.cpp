@@ -2,7 +2,7 @@
 
 Terrain::Terrain(int gridX, int gridZ)
 {
-  size = 800;
+  size = 8000;
   tileSize = 80;
   vertexCount = 128;
 
