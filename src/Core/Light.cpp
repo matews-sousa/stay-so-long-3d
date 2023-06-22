@@ -1,16 +1,16 @@
 #include "Light.hpp"
 
-Light::Light(glm::vec3 position, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular)
+Light::Light(glm::vec3 lightPosition, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular)
 {
-  this->position = position;
+  this->lightPosition = lightPosition;
   this->ambient = ambient;
   this->diffuse = diffuse;
   this->specular = specular;
 }
 
-Light::Light(glm::vec3 position, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, LightType type)
+Light::Light(glm::vec3 lightPosition, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, LightType type)
 {
-  this->position = position;
+  this->lightPosition = lightPosition;
   this->ambient = ambient;
   this->diffuse = diffuse;
   this->specular = specular;
@@ -34,12 +34,12 @@ glm::vec3 Light::calculateIllumination(const glm::vec3 &vertexPosition, const gl
   if (!Utils::isInFrustum(projectionMatrix * viewMatrix * modelMatrix, vertexPosition))
     return glm::vec3(0.0f);
 
-  glm::vec3 transformedNormal = glm::vec3(modelMatrix * glm::vec4(normal, 0.0f)); // Transform normal to world space
-  transformedNormal = glm::normalize(transformedNormal); // Normalize normal
-  glm::vec3 transformedPosition = glm::vec3(modelMatrix * glm::vec4(vertexPosition, 1.0f)); // Transform position to world space
+  glm::vec3 transformedVertexNormal = glm::vec3(glm::transpose(glm::inverse(modelMatrix)) * glm::vec4(normal, 0.0f)); // Transform normal to world space
+  transformedVertexNormal = glm::normalize(transformedVertexNormal); // Normalize normal
+  glm::vec3 transformedVertexPosition = glm::vec3(glm::transpose(glm::inverse(modelMatrix)) * glm::vec4(vertexPosition, 1.0f)); // Transform position to world space
 
   // Calculate light direction
-  glm::vec3 lightDirection = glm::normalize(this->position - transformedPosition);
+  glm::vec3 lightDirection = glm::normalize(this->lightPosition - transformedVertexPosition);
 
   float intensity = 1.0f;
 
@@ -53,14 +53,14 @@ glm::vec3 Light::calculateIllumination(const glm::vec3 &vertexPosition, const gl
   }
 
   // diffuse
-  float nDot1 = glm::dot(transformedNormal, lightDirection);
+  float nDot1 = glm::dot(transformedVertexNormal, lightDirection);
   float brightness = glm::max(nDot1, 0.0f);
   glm::vec3 diff = this->diffuse * brightness * intensity;
   
   // specular
-  glm::vec3 toCameraVector = glm::vec3(glm::inverse(viewMatrix) * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f)) - transformedPosition;
+  glm::vec3 toCameraVector = glm::vec3(glm::inverse(viewMatrix) * glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)) - transformedVertexPosition;
   toCameraVector = glm::normalize(toCameraVector);
-  glm::vec3 reflectionVector = glm::reflect(-lightDirection, transformedNormal);
+  glm::vec3 reflectionVector = glm::reflect(-lightDirection, transformedVertexNormal);
   float specularFactor = glm::max(glm::dot(toCameraVector, reflectionVector), 0.0f);
   specularFactor = glm::pow(specularFactor, 32.0f);
   glm::vec3 spec = this->specular * specularFactor * intensity;
@@ -83,6 +83,6 @@ void Light::draw()
   glPointSize(10.0f);
   glBegin(GL_POINTS);
   glColor3f(1.0f, 1.0f, 1.0f);
-  glVertex3f(position.x, position.y, position.z);
+  glVertex3f(lightPosition.x, lightPosition.y, lightPosition.z);
   glEnd();
 }

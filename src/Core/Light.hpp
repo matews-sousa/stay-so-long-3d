@@ -17,7 +17,7 @@ enum LightType
 class Light
 {
 private:
-  glm::vec3 position;
+  glm::vec3 lightPosition;
   glm::vec3 ambient;
   glm::vec3 diffuse;
   glm::vec3 specular;
@@ -29,22 +29,22 @@ private:
   LightType type = POINT_LIGHT;
 
 public:
-  Light(glm::vec3 position, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular);
-  Light(glm::vec3 position, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, LightType type);
+  Light(glm::vec3 lightPosition, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular);
+  Light(glm::vec3 lightPosition, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, LightType type);
   virtual ~Light();
 
-  glm::vec3 calculateIllumination(const glm::vec3 &position, const glm::vec3 &normal, const glm::mat4 &modelMatrix);
-  static glm::vec3 calculateIllumination(std::vector<Light *> lights, const glm::vec3 &position, const glm::vec3 &normal, const glm::mat4 &modelMatrix);
+  glm::vec3 calculateIllumination(const glm::vec3 &lightPosition, const glm::vec3 &normal, const glm::mat4 &modelMatrix);
+  static glm::vec3 calculateIllumination(std::vector<Light *> lights, const glm::vec3 &lightPosition, const glm::vec3 &normal, const glm::mat4 &modelMatrix);
   void draw();
 
   void toggle() { isOn = !isOn; }
 
-  glm::vec3 getPosition() { return position; }
+  glm::vec3 getLightPosition() { return lightPosition; }
   glm::vec3 getAmbient() { return ambient; }
   glm::vec3 getDiffuse() { return diffuse; }
   glm::vec3 getSpecular() { return specular; }
 
-  void setPosition(glm::vec3 position) { this->position = position; }
+  void setLightPosition(glm::vec3 lightPosition) { this->lightPosition = lightPosition; }
   void setAmbient(glm::vec3 ambient) { this->ambient = ambient; }
   void setDiffuse(glm::vec3 diffuse) { this->diffuse = diffuse; }
   void setSpecular(glm::vec3 specular) { this->specular = specular; }

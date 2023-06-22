@@ -134,7 +134,7 @@ void Player::draw()
   glPushMatrix();
     glMultMatrixf(glm::value_ptr(localMatrix * model));
     Game::models["mecha"]->setModelMatrix(localMatrix * model);
-    Game::models["mecha"]->draw();
+    Game::models["mecha"]->createDisplayList();
   glPopMatrix();
 
   glPointSize(10.0f);

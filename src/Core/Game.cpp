@@ -127,8 +127,8 @@ void Game::update()
   // make the light position rotate around the origin
   lightAngle += 0.1f;
 
-  lights[0]->setPosition(glm::vec3(200.0f * cos(lightAngle), 1000.0f, 200.0f * sin(lightAngle)));
-  lights[1]->setPosition(glm::vec3(200.0f * -cos(lightAngle), 500.0f, 200.0f * -sin(lightAngle)));
+  lights[0]->setLightPosition(glm::vec3(200.0f * cos(lightAngle), 1000.0f, 200.0f * sin(lightAngle)));
+  lights[1]->setLightPosition(glm::vec3(200.0f * -cos(lightAngle), 500.0f, 200.0f * -sin(lightAngle)));
 
   if (Input::isKeyPressed(sf::Keyboard::Num1))
   {
@@ -152,7 +152,7 @@ void Game::update()
   }
 
   player->update();
-  lights[3]->setPosition(player->getPosition() + glm::vec3(0.0f, 50.0f, 0.0f));
+  lights[3]->setLightPosition(player->getPosition() + glm::vec3(0.0f, 50.0f, 0.0f));
 
   deltaTime = clock.restart().asSeconds();
 }
@@ -217,7 +217,7 @@ void Game::render()
   glPopMatrix();
 
   glColor3f(1.0f, 1.0f, 1.0f);
-
+/* 
   Texture::bindByName("mecha");
   modelMatrix = glm::mat4(1.0f);
   modelMatrix = glm::translate(modelMatrix, glm::vec3(0.0f, 0.0f, 0.0f));
@@ -226,7 +226,7 @@ void Game::render()
   glMultMatrixf(glm::value_ptr(modelMatrix));
   models["mecha"]->setModelMatrix(modelMatrix);
   models["mecha"]->createDisplayList();
-  glPopMatrix();
+  glPopMatrix(); */
 
   Texture::bindByName("building");
   modelMatrix = glm::mat4(1.0f);
