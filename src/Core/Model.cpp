@@ -49,10 +49,11 @@ void Model::drawFace(Face &face)
   else
     glBegin(GL_TRIANGLES);
 
-  glm::vec3 illum = Light::calculateIllumination(lights, face.faceCenter, face.faceNormal, modelMatrix);
-  glColor3f(illum.x, illum.y, illum.z);
   for (int v = 0; v < face.vertices.size(); v++)
   {
+    glm::vec3 illum = Light::calculateIllumination(lights, face.vertices[v], face.normals[v], modelMatrix);
+    glColor3f(illum.x, illum.y, illum.z);
+
     if (face.texCoords.size() > 0)
       glTexCoord2f(face.texCoords[v].x, face.texCoords[v].y);
     if (face.normals.size() > 0)

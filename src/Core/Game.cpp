@@ -113,7 +113,7 @@ void Game::update()
     processEvents();
   }
 
-  glm::mat4 viewMatrix = camera->getViewMatrix();
+  viewMatrix = camera->getViewMatrix();
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
   glMultMatrixf(glm::value_ptr(viewMatrix));
@@ -237,6 +237,17 @@ void Game::render()
   glMultMatrixf(glm::value_ptr(modelMatrix));
   models["building"]->setModelMatrix(modelMatrix);
   models["building"]->createDisplayList();
+  glPopMatrix();
+
+  Texture::bindByName("wall");
+  modelMatrix = glm::mat4(1.0f);
+  modelMatrix = glm::translate(modelMatrix, glm::vec3(-150.0f, 50.0f, -150.0f));
+  modelMatrix = glm::rotate(modelMatrix, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+  modelMatrix = glm::scale(modelMatrix, glm::vec3(50.0f, 50.0f, 50.0f));
+  glPushMatrix();
+  glMultMatrixf(glm::value_ptr(modelMatrix));
+  models["cube"]->setModelMatrix(modelMatrix);
+  models["cube"]->createDisplayList();
   glPopMatrix();
 
   player->draw();
