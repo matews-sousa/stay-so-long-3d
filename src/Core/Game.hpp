@@ -1,7 +1,7 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include <GL/gl.h>
+#include <GL/glew.h>
 #include <iostream>
 #include <vector>
 #include <map>

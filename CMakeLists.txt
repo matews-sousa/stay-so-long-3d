@@ -7,6 +7,7 @@ set(CMAKE_CXX_STANDARD 11)
 # Find SFML and OpenGL libraries
 find_package(SFML 2.5 COMPONENTS graphics window system REQUIRED)
 find_package(OpenGL REQUIRED)
+find_package(GLEW REQUIRED)
 
 set(SOURCES
   src/main.cpp
@@ -28,6 +29,9 @@ set(SOURCES
 add_executable(${PROJECT_NAME} 
   ${SOURCES}
 )
+
+include_directories(${GLEW_INCLUDE_DIRS})
+target_link_libraries(${PROJECT_NAME} ${GLEW_LIBRARIES})
 
 # Link SFML and OpenGL libraries
 target_link_libraries(${PROJECT_NAME} sfml-graphics sfml-window sfml-system OpenGL::GL)

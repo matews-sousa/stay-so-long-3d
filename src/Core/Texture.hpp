@@ -4,7 +4,7 @@
 #include <vector>
 #include <map>
 #include <SFML/Graphics.hpp>
-#include <GL/gl.h>
+#include <GL/glew.h>
 
 class Texture
 {

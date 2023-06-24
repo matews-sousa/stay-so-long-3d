@@ -5,7 +5,7 @@
 #include <algorithm>
 #include <glm/vec4.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include <GL/gl.h>
+#include <GL/glew.h>
 
 enum LIGHT_TYPE
 {

@@ -6,7 +6,7 @@
 #include <fstream>
 #include <sstream>
 #include <algorithm>
-#include <GL/gl.h>
+#include <GL/glew.h>
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
 #include <glm/mat4x4.hpp>

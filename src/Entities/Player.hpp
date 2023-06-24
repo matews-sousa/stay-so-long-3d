@@ -2,7 +2,7 @@
 
 #include <iostream>
 #include <glm/glm.hpp>
-#include <GL/gl.h>
+#include <GL/glew.h>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/quaternion.hpp>
