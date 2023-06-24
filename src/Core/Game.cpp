@@ -5,7 +5,7 @@ Camera *Game::camera;
 MousePicker *Game::picker;
 float Game::deltaTime;
 Terrain *Game::terrain;
-std::map<std::string, Model *> Game::models;
+std::map<std::string, Mesh *> Game::models;
 
 Light *mainLight = nullptr;
 Light *secondLight = nullptr;
@@ -24,6 +24,14 @@ Game::Game()
   window = new sf::RenderWindow(sf::VideoMode(1280, 920), "SFML Game", sf::Style::Close, settings);
   window->setFramerateLimit(60);
   window->setPosition(sf::Vector2i((desktop.width - window->getSize().x) / 2, (desktop.height - window->getSize().y) / 2));
+  window->setActive(true);
+
+  GLenum err = glewInit();
+  if (GLEW_OK != err)
+  {
+    std::cout << "Error: " << glewGetErrorString(err) << std::endl;
+    exit(1);
+  }
 
   player = new Player(glm::vec3(0.0f, 35.0f, 0.0f), glm::vec3(15.0f, 15.0f, 15.0f));
 
@@ -73,10 +81,10 @@ void Game::initTextures()
 
 void Game::initObjModels()
 {
-  models["cube"] = new Model("../src/Assets/Models/cube.obj");
-  models["mecha"] = new Model("../src/Assets/Models/mecha.obj");
-  models["spaceship"] = new Model("../src/Assets/Models/Spaceship6.obj");
-  models["building"] = new Model("../src/Assets/Models/building.obj");
+  models["cube"] = new Mesh("../src/Assets/Models/cube.obj");
+  models["mecha"] = new Mesh("../src/Assets/Models/mecha.obj");
+  models["spaceship"] = new Mesh("../src/Assets/Models/Spaceship6.obj");
+  models["building"] = new Mesh("../src/Assets/Models/building.obj");
 }
 
 void Game::init()
@@ -174,25 +182,32 @@ void Game::render()
 
   terrain->draw();
 
+  Texture::bindByName("container");
+  glPushMatrix();
+  glTranslatef(250.0f, 50.0f, 250.0f);
+  glScalef(50.0f, 50.0f, 50.0f);
+  models["cube"]->render();
+  glPopMatrix();
+
   Texture::bindByName("mecha");
   glPushMatrix();
   glTranslatef(0.0f, 0.0f, 0.0f);
   glScalef(50.0f, 50.0f, 50.0f);
-  models["mecha"]->draw();
+  models["mecha"]->render();
   glPopMatrix();
 
   Texture::bindByName("building");
   glPushMatrix();
   glTranslatef(150.0f, 0.0f, 150.0f);
   glScalef(25.0f, 25.0f, 25.0f);
-  models["building"]->draw();
+  models["building"]->render();
   glPopMatrix();
 
   Texture::bindByName("spaceship");
   glPushMatrix();
   glTranslatef(-150.0f, 25.0f, -150.0f);
   glScalef(25.0f, 25.0f, 25.0f);
-  models["spaceship"]->draw();
+  models["spaceship"]->render();
   glPopMatrix();
 
   player->draw();

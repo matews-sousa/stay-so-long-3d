@@ -15,6 +15,8 @@
 #include "Model.hpp"
 #include "Light.hpp"
 #include "MousePicker.hpp"
+#include "OBJLoader.hpp"
+#include "Mesh.hpp"
 #include "../Entities/Player.hpp"
 #include "../Entities/Terrain.hpp"
 #include "../primitives.hpp"
@@ -50,5 +52,5 @@ public:
   static MousePicker *picker;
   static float deltaTime;
   static Terrain *terrain;
-  static std::map<std::string, Model *> models;
+  static std::map<std::string, Mesh *> models;
 };

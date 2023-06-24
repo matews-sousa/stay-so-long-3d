@@ -19,6 +19,8 @@ set(SOURCES
   src/Core/Model.cpp
   src/Core/Light.cpp
   src/Core/MousePicker.cpp
+  src/Core/OBJLoader.cpp
+  src/Core/Mesh.cpp
 
   src/Entities/GameObject.cpp
   src/Entities/Player.cpp

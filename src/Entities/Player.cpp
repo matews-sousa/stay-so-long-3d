@@ -115,7 +115,7 @@ void Player::draw()
     glMultMatrixf(glm::value_ptr(localMatrix));
     glRotatef(-90.0f, 0.0f, 1.0f, 0.0f);
     glScalef(scale.x, scale.y, scale.z);
-    Game::models["mecha"]->draw();
+    Game::models["mecha"]->render();
   glPopMatrix();
 
   glPointSize(10.0f);
