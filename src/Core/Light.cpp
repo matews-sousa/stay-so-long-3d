@@ -1,159 +1,94 @@
 #include "Light.hpp"
 
-int Light::numLights;
-std::vector<int> Light::availableLights;
-std::vector<Light *> Light::lights;
-
-void Light::initLights()
+Light::Light(glm::vec3 lightPosition, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular)
 {
-  glGetIntegerv(GL_MAX_LIGHTS, &numLights);
-
-  for (int i = 0; i < numLights; i++)
-  {
-    availableLights.push_back(GL_LIGHT0 + i);
-  }
+  this->lightPosition = lightPosition;
+  this->ambient = ambient;
+  this->diffuse = diffuse;
+  this->specular = specular;
 }
 
-Light::Light(LIGHT_TYPE type)
+Light::Light(glm::vec3 lightPosition, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, LightType type)
 {
-  lights.push_back(this);
-
-  if ((int)availableLights.size() > 0)
-  {
-    lightNum = availableLights[0];
-
-    availableLights.erase(availableLights.begin());
-  
-    setVisible(true);
-
-    setPosition(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
-    setAmbient(glm::vec4(0.2f, 0.2f, 0.2f, 1.0f));
-    setDiffuse(glm::vec4(0.8f, 0.8f, 0.8f, 1.0f));
-    setSpecular(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
-    setSpotDirection(glm::vec4(0.0f, -1.0f, 0.0f, 1.0f));
-    setCutoff(45.0f);
-    setExponent(12.0f);
-
-    setLightType(type);
-    
-    updateLight();
-  }
-  else
-  {
-    lightNum = 0;
-    setVisible(false);
-    std::cout << "No more lights available" << std::endl;
-  }
+  this->lightPosition = lightPosition;
+  this->ambient = ambient;
+  this->diffuse = diffuse;
+  this->specular = specular;
+  this->type = type;
 }
 
 Light::~Light()
 {
-  if (lightNum != 0)
+}
+
+glm::vec3 Light::calculateIllumination(const glm::vec3 &vertexPosition, const glm::vec3 &normal, const glm::mat4 &modelMatrix)
+{
+  if (!isOn || !Utils::isInFrustum(projectionMatrix * viewMatrix * modelMatrix, vertexPosition))
+    return glm::vec3(0.0f);
+
+  if (type == DIRECTIONAL_LIGHT)
   {
-    availableLights.push_back(lightNum);
+    return diffuse;
   }
 
-  lights.erase(std::find(lights.begin(), lights.end(), this));
-}
+  glm::vec3 transformedVertexNormal = glm::vec3(glm::transpose(glm::inverse(viewMatrix * modelMatrix)) * glm::vec4(normal, 0.0f)); // Transform normal to world space
+  transformedVertexNormal = glm::normalize(transformedVertexNormal); // Normalize normal
+  glm::vec3 transformedVertexPosition = glm::vec3(viewMatrix * modelMatrix * glm::vec4(vertexPosition, 1.0f)); // Transform position to world space
 
-void Light::setVisible(bool visible)
-{
-  this->visible = visible;
+  // Calculate light direction
+  glm::vec3 lightPositionView = glm::vec3(viewMatrix * glm::vec4(this->lightPosition, 1.0f));
+  glm::vec3 lightDirection = glm::normalize(lightPositionView - transformedVertexPosition);
 
-  if (visible)
-    glEnable(lightNum);
-  else
-    glDisable(lightNum);
-}
+  // return if light is behind the vertex
+  if (glm::dot(transformedVertexNormal, lightDirection) < 0.0f)
+    return ambient;
 
-void Light::setPosition(glm::vec4 position)
-{
-  this->position = position;
-  glLightfv(lightNum, GL_POSITION, glm::value_ptr(position));
-}
+  float intensity = 1.0f;
 
-void Light::setAmbient(glm::vec4 ambient) 
-{ 
-  this->ambient = ambient;
-  glLightfv(lightNum, GL_AMBIENT, glm::value_ptr(ambient));
-}
-
-void Light::setDiffuse(glm::vec4 diffuse) 
-{ 
-  this->diffuse = diffuse;
-  glLightfv(lightNum, GL_DIFFUSE, glm::value_ptr(diffuse));
-}
-
-void Light::setSpecular(glm::vec4 specular)
-{ 
-  this->specular = specular; 
-  glLightfv(lightNum, GL_SPECULAR, glm::value_ptr(specular));
-}
-
-void Light::setLightType(LIGHT_TYPE type)
-{
-  this->lightType = type;
-
-  if (type == LIGHT_SPOT)
+  if (type == SPOT_LIGHT)
   {
-    position.w = 1.0f;
-    setCutoff(45.0f);
-  }
-  else if (type == LIGHT_POINT)
-  {
-    position.w = 1.0f;
-    setCutoff(180.0f);
-  }
-  else if (type == LIGHT_DIRECTIONAL)
-  {
-    position.w = 0.0f;
-    setCutoff(180.0f);
+    float outerCone = 0.90f;
+    float innerCone = 0.95f;
+
+    float angle = glm::dot(glm::vec3(0.0f, -1.0f, 0.0f), -lightDirection);
+    intensity = glm::clamp((angle - outerCone) / (innerCone - outerCone), 0.0f, 1.0f);
   }
 
-  updateLight();
+  // diffuse
+  float nDot1 = glm::dot(transformedVertexNormal, lightDirection);
+  float brightness = glm::max(nDot1, 0.0f);
+  glm::vec3 diff = this->diffuse * brightness * intensity;
+  
+  // specular
+  glm::vec3 toCameraVector = glm::vec3(glm::inverse(viewMatrix) * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f)) - transformedVertexPosition;
+  toCameraVector = glm::normalize(toCameraVector);
+  glm::vec3 reflectionVector = glm::reflect(-lightDirection, transformedVertexNormal);
+  float specularFactor = glm::max(glm::dot(toCameraVector, reflectionVector), 0.0f);
+  specularFactor = glm::pow(specularFactor, 32.0f);
+  glm::vec3 spec = this->specular * specularFactor * intensity;
+
+  return ambient + diff + spec;
 }
 
-void Light::setSpotDirection(glm::vec4 spotDirection) 
-{ 
-  this->spotDirection = spotDirection; 
-  glLightfv(lightNum, GL_SPOT_DIRECTION, glm::value_ptr(spotDirection));
-}
-
-void Light::setCutoff(float cutoff) 
-{ 
-  this->cutoff = cutoff;
-  glLightf(lightNum, GL_SPOT_CUTOFF, cutoff);
-}
-
-void Light::setExponent(float exponent)
-{ 
-  this->exponent = exponent; 
-  glLightf(lightNum, GL_SPOT_EXPONENT, exponent);
-}
-
-void Light::setAttenuation(float constant, float linear, float quadratic)
+glm::vec3 Light::calculateIllumination(std::vector<Light *> lights, const glm::vec3 &position, const glm::vec3 &normal, const glm::mat4 &modelMatrix)
 {
-  glLightfv(lightNum, GL_CONSTANT_ATTENUATION, &constant);
-  glLightfv(lightNum, GL_LINEAR_ATTENUATION, &linear);
-  glLightfv(lightNum, GL_QUADRATIC_ATTENUATION, &quadratic);
+  glm::vec3 illumination = glm::vec3(0.0f);
+
+  for (auto &light : lights)
+  {
+    if (!light->isOn || !Utils::isInFrustum(light->projectionMatrix * light->viewMatrix * modelMatrix, position))
+      continue;
+
+    illumination += light->calculateIllumination(position, normal, modelMatrix);
+  }
+  return illumination;
 }
 
-void Light::updateLight()
-{
-  glLightfv(lightNum, GL_POSITION, glm::value_ptr(position));
-  glLightfv(lightNum, GL_AMBIENT, glm::value_ptr(ambient));
-  glLightfv(lightNum, GL_DIFFUSE, glm::value_ptr(diffuse));
-  glLightfv(lightNum, GL_SPECULAR, glm::value_ptr(specular));
-  glLightfv(lightNum, GL_SPOT_DIRECTION, glm::value_ptr(spotDirection));
-  glLightf(lightNum, GL_SPOT_CUTOFF, cutoff);
-  glLightf(lightNum, GL_SPOT_EXPONENT, exponent);
-}
-
-void Light::drawLight()
+void Light::draw()
 {
   glPointSize(10.0f);
   glBegin(GL_POINTS);
-  glColor3f(1.0f, 1.0f, 0.0f);
-  glVertex3f(position.x, position.y, position.z);
+  glColor3f(1.0f, 1.0f, 1.0f);
+  glVertex3f(lightPosition.x, lightPosition.y, lightPosition.z);
   glEnd();
 }

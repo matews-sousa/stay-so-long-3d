@@ -106,16 +106,14 @@ void Player::look()
 void Player::draw()
 {
   glm::mat4 model = glm::mat4(1.0f);
-  model = glm::translate(model, this->position);
+  model = glm::rotate(model, glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
   model = glm::scale(model, this->scale);
   
   // body
   Texture::bindByName("mecha");
   glPushMatrix();
-    glMultMatrixf(glm::value_ptr(localMatrix));
-    glRotatef(-90.0f, 0.0f, 1.0f, 0.0f);
-    glScalef(scale.x, scale.y, scale.z);
-    Game::models["mecha"]->render();
+    glMultMatrixf(glm::value_ptr(localMatrix * model));
+    Game::models["mecha"]->render(localMatrix * model);
   glPopMatrix();
 
   glPointSize(10.0f);

@@ -25,6 +25,10 @@ class Player;
 
 class MousePicker;
 
+class Terrain;
+
+class Mesh;
+
 class Game
 {
 private:
@@ -36,6 +40,7 @@ private:
 
   void initTextures();
   void initObjModels();
+  void initLights();
   void init();
   void update();
   void render();
@@ -53,4 +58,5 @@ public:
   static float deltaTime;
   static Terrain *terrain;
   static std::map<std::string, Mesh *> models;
+  static std::vector<Light *> lights;
 };
