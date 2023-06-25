@@ -7,6 +7,7 @@
 #include "../Vertex.hpp"
 #include <iostream>
 #include "OBJLoader.hpp"
+#include "Game.hpp"
 
 class Mesh
 {
@@ -15,7 +16,7 @@ public:
   virtual ~Mesh();
 
   void render();
-  void updateColorBuffer(const std::vector<glm::vec3>& colors);
+  void updateColorBuffer();
 
 private:
   GLuint vbo;

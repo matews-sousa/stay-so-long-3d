@@ -25,6 +25,8 @@ class Player;
 
 class MousePicker;
 
+class Mesh;
+
 class Game
 {
 private:

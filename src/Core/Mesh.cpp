@@ -16,20 +16,22 @@ Mesh::~Mesh()
   glDeleteBuffers(1, &vbo);
 }
 
-void Mesh::updateColorBuffer(const std::vector<glm::vec3>& colors)
+void Mesh::updateColorBuffer()
 {
   for (int i = 0; i < vertices.size(); i++)
   {
-    vertices[i].color = colors[i];
+    vertices[i].color = glm::vec3(1.0f, 1.0f, 1.0f);
   }
 
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
-  glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(), GL_DYNAMIC_DRAW);
+  glBufferSubData(GL_ARRAY_BUFFER, 0, vertices.size() * sizeof(Vertex), vertices.data());
   glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 void Mesh::render()
 {
+  updateColorBuffer();
+
   glEnableClientState(GL_VERTEX_ARRAY);
   glEnableClientState(GL_NORMAL_ARRAY);
   glEnableClientState(GL_TEXTURE_COORD_ARRAY);
