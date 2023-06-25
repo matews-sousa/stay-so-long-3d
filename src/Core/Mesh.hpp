@@ -23,8 +23,6 @@ public:
   void updateColorBuffer();
 
 private:
-  std::unordered_map<int, glm::vec3> illuminationCache;
-
   GLuint vbo;
 
   std::vector<Vertex> vertices;
