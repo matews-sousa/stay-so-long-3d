@@ -68,9 +68,7 @@ void Game::initObjModels()
 
 void Game::initLights()
 {
-  lights.push_back(new Light(glm::vec3(200.0f, 1000.0f, 200.0f), glm::vec3(0.2f, 0.2f, 0.2f), glm::vec3(1.0f, 0.0f, 1.0f), glm::vec3(1.0f, 0.0f, 1.0f), LightType::SPOT_LIGHT));
   lights.push_back(new Light(glm::vec3(200.0f, 500.0f, 200.0f), glm::vec3(0.2f, 0.2f, 0.2f), glm::vec3(1.0f, 1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 0.0f), LightType::SPOT_LIGHT));
-  lights.push_back(new Light(glm::vec3(1000.0f, 200.0f, 1000.0f), glm::vec3(0.1f, 0.1f, 0.1f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f)));
   lights.push_back(new Light(player->getPosition(), glm::vec3(0.2f, 0.2f, 0.2f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f)));
 
   for (auto &light : lights)
@@ -118,6 +116,8 @@ void Game::update()
     processEvents();
   }
 
+  std::cout << "FPS: " << 1.0f / deltaTime << std::endl;
+
   viewMatrix = camera->getViewMatrix();
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
@@ -135,7 +135,6 @@ void Game::update()
   lightAngle += 0.1f;
 
   lights[0]->setLightPosition(glm::vec3(200.0f * cos(lightAngle), 1000.0f, 200.0f * sin(lightAngle)));
-  lights[1]->setLightPosition(glm::vec3(200.0f * -cos(lightAngle), 500.0f, 200.0f * -sin(lightAngle)));
 
   if (Input::isKeyPressed(sf::Keyboard::Num1))
   {
@@ -147,19 +146,9 @@ void Game::update()
     lights[1]->toggle();
     Input::setKeyPressed(sf::Keyboard::Num2, false);
   }
-  else if (Input::isKeyPressed(sf::Keyboard::Num3))
-  {
-    lights[2]->toggle();
-    Input::setKeyPressed(sf::Keyboard::Num3, false);
-  }
-  else if (Input::isKeyPressed(sf::Keyboard::Num4))
-  {
-    lights[3]->toggle();
-    Input::setKeyPressed(sf::Keyboard::Num4, false);
-  }
 
   player->update();
-  lights[3]->setLightPosition(player->getPosition() + glm::vec3(0.0f, 50.0f, 0.0f));
+  lights[1]->setLightPosition(player->getPosition() + glm::vec3(0.0f, 50.0f, 0.0f));
 
   deltaTime = clock.restart().asSeconds();
 }
@@ -194,15 +183,6 @@ void Game::render()
   glMultMatrixf(glm::value_ptr(modelMatrix));
   models["cube"]->render(modelMatrix);
   glPopMatrix();
-
-/*   Texture::bindByName("mecha");
-  glPushMatrix();
-  modelMatrix = glm::mat4(1.0f);
-  modelMatrix = glm::translate(modelMatrix, glm::vec3(0.0f, 0.0f, 0.0f));
-  modelMatrix = glm::scale(modelMatrix, glm::vec3(50.0f, 50.0f, 50.0f));
-  glMultMatrixf(glm::value_ptr(modelMatrix));
-  models["mecha"]->render(modelMatrix);
-  glPopMatrix(); */
 
   Texture::bindByName("building");
   glPushMatrix();

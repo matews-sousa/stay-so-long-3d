@@ -88,7 +88,7 @@ void Player::move(glm::vec3 direction)
   this->velocity = direction * speed * Game::deltaTime;
   this->position += this->velocity;
   
-  Game::camera->move(velocity);
+  Game::camera->move(position);
 }
 
 void Player::look()
