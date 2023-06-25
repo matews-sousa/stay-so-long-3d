@@ -29,8 +29,6 @@ class Terrain;
 
 class Mesh;
 
-class Mesh;
-
 class Game
 {
 private:
