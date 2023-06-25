@@ -18,8 +18,8 @@ glm::mat4 Camera::getViewMatrix()
   return glm::lookAt(this->position, this->target, this->up);
 }
 
-void Camera::move(glm::vec3 direction)
+void Camera::move(glm::vec3 playerPos)
 {
-  this->position += direction;
-  this->target += direction;
+  this->position = playerPos + glm::vec3(500.0f, 500.0f, -500.0f);
+  this->target = playerPos;
 }

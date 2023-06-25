@@ -1,7 +1,7 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include <GL/gl.h>
+#include <GL/glew.h>
 #include <iostream>
 #include <vector>
 #include <map>
@@ -15,6 +15,8 @@
 #include "Model.hpp"
 #include "Light.hpp"
 #include "MousePicker.hpp"
+#include "OBJLoader.hpp"
+#include "Mesh.hpp"
 #include "../Entities/Player.hpp"
 #include "../Entities/Terrain.hpp"
 #include "../primitives.hpp"
@@ -22,6 +24,10 @@
 class Player;
 
 class MousePicker;
+
+class Terrain;
+
+class Mesh;
 
 class Game
 {
@@ -34,6 +40,7 @@ private:
 
   void initTextures();
   void initObjModels();
+  void initLights();
   void init();
   void update();
   void render();
@@ -50,5 +57,6 @@ public:
   static MousePicker *picker;
   static float deltaTime;
   static Terrain *terrain;
-  static std::map<std::string, Model *> models;
+  static std::map<std::string, Mesh *> models;
+  static std::vector<Light *> lights;
 };

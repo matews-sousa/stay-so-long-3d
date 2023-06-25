@@ -6,6 +6,8 @@
 #include "../Entities/Terrain.hpp"
 #include "Game.hpp"
 
+class Terrain;
+
 const int RECURSION_COUNT = 200;
 const float RAY_RANGE = 2000;
 

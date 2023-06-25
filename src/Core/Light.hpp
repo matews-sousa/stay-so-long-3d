@@ -1,66 +1,53 @@
 #pragma once
 
-#include <iostream>
+#include <glm/vec3.hpp>
+#include <glm/mat4x4.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <GL/glew.h>
 #include <vector>
-#include <algorithm>
-#include <glm/vec4.hpp>
-#include <glm/gtc/type_ptr.hpp>
-#include <GL/gl.h>
+#include "Utils.hpp"
 
-enum LIGHT_TYPE
+enum LightType
 {
-  LIGHT_POINT,
-  LIGHT_SPOT,
-  LIGHT_DIRECTIONAL
+  POINT_LIGHT,
+  DIRECTIONAL_LIGHT,
+  SPOT_LIGHT
 };
 
 class Light
 {
-public:
-  static void initLights();
-  Light(LIGHT_TYPE type);
-  ~Light();
-
-  void setVisible(bool visible = true);
-  void toggleVisible() { setVisible(!visible); }
-
-  LIGHT_TYPE getLightType() { return lightType; }
-
-  void setPosition(glm::vec4 position);
-  void setAmbient(glm::vec4 ambient);
-  void setDiffuse(glm::vec4 diffuse);
-  void setSpecular(glm::vec4 specular);
-
-  void setLightType(LIGHT_TYPE type);
-
-  // spotlight type specific functions
-  void setSpotDirection(glm::vec4 spotDirection);
-  void setCutoff(float cutoff);
-  void setExponent(float exponent);
-
-  void setAttenuation(float constant, float linear, float quadratic);
-
-  int getLightNum() { return lightNum; }
-
-  void updateLight();
-  void drawLight();
-
-  static int numLights;
-  static std::vector<int> availableLights;
-  static std::vector<Light *> lights;
-
 private:
-  glm::vec4 position;
-  glm::vec4 ambient;
-  glm::vec4 diffuse;
-  glm::vec4 specular;
-  glm::vec4 spotDirection;
+  glm::vec3 lightPosition;
+  glm::vec3 ambient;
+  glm::vec3 diffuse;
+  glm::vec3 specular;
 
-  LIGHT_TYPE lightType;
+  glm::mat4 projectionMatrix;
+  glm::mat4 viewMatrix;
 
-  float cutoff;
-  float exponent;
+  bool isOn = true;
+  LightType type = POINT_LIGHT;
+  
+public:
+  Light(glm::vec3 lightPosition, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular);
+  Light(glm::vec3 lightPosition, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, LightType type);
+  virtual ~Light();
 
-  bool visible;
-  int lightNum;
+  glm::vec3 calculateIllumination(const glm::vec3 &lightPosition, const glm::vec3 &normal, const glm::mat4 &modelMatrix);
+  static glm::vec3 calculateIllumination(std::vector<Light *> lights, const glm::vec3 &lightPosition, const glm::vec3 &normal, const glm::mat4 &modelMatrix);
+  void draw();
+
+  void toggle() { isOn = !isOn; }
+
+  glm::vec3 getLightPosition() { return lightPosition; }
+  glm::vec3 getAmbient() { return ambient; }
+  glm::vec3 getDiffuse() { return diffuse; }
+  glm::vec3 getSpecular() { return specular; }
+
+  void setLightPosition(glm::vec3 lightPosition) { this->lightPosition = lightPosition; }
+  void setAmbient(glm::vec3 ambient) { this->ambient = ambient; }
+  void setDiffuse(glm::vec3 diffuse) { this->diffuse = diffuse; }
+  void setSpecular(glm::vec3 specular) { this->specular = specular; }
+  void setViewMatrix(glm::mat4 viewMatrix) { this->viewMatrix = viewMatrix; }
+  void setProjectionMatrix(glm::mat4 projectionMatrix) { this->projectionMatrix = projectionMatrix; }
 };
