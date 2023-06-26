@@ -7,6 +7,9 @@ float Game::deltaTime;
 Terrain *Game::terrain;
 std::map<std::string, Mesh *> Game::models;
 std::vector<Light *> Game::lights;
+std::vector<GLight *> Game::glights;
+
+bool Game::GLightsEnabled = false;
 
 Game::Game()
 {
@@ -32,6 +35,7 @@ Game::Game()
   player = new Player(glm::vec3(0.0f, 35.0f, 0.0f), glm::vec3(15.0f, 15.0f, 15.0f));
 
   init();
+  GLight::initLights();
   initLights();
   initTextures();
   initObjModels();
@@ -85,11 +89,29 @@ void Game::initObjModels()
 
 void Game::initLights()
 {
+  // init our own lights
   lights.push_back(new Light(glm::vec3(200.0f, 500.0f, 200.0f), glm::vec3(0.2f, 0.2f, 0.2f), glm::vec3(1.0f, 1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 0.0f), LightType::SPOT_LIGHT));
   lights.push_back(new Light(player->getPosition(), glm::vec3(0.2f, 0.2f, 0.2f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f)));
-
+  
   for (auto &light : lights)
     light->setViewMatrix(viewMatrix);
+
+  // init OpenGL lights
+  GLight *mainLight = new GLight(LIGHT_SPOT);
+  mainLight->setPosition(glm::vec4(100.0f, 200.0f, 100.0f, 1.0f));
+  mainLight->setDiffuse(glm::vec4(1.0f, 0.235f, 0.654f, 1.0f));
+
+  GLight *secondLight = new GLight(LIGHT_SPOT);
+  secondLight->setPosition(glm::vec4(-100.0f, 200.0f, -100.0f, 1.0f));
+  secondLight->setDiffuse(glm::vec4(0.0f, 0.235f, 1.0f, 1.0f));
+
+  GLight *thirdLight = new GLight(LIGHT_POINT);
+  thirdLight->setPosition(glm::vec4(player->getPosition(), 1.0f));
+  thirdLight->setDiffuse(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+
+  glights.push_back(mainLight);
+  glights.push_back(secondLight);
+  glights.push_back(thirdLight);
 }
 
 void Game::init()
@@ -141,31 +163,65 @@ void Game::update()
   glMultMatrixf(glm::value_ptr(viewMatrix));
 
   picker->update(projectionMatrix, viewMatrix);
-
-  for (auto &light : lights)
-  {
-    light->setViewMatrix(viewMatrix);
-    light->setProjectionMatrix(projectionMatrix);
-  }
-
-  // make the light position rotate around the origin
-  lightAngle += 0.1f;
-
-  lights[0]->setLightPosition(glm::vec3(200.0f * cos(lightAngle), 1000.0f, 200.0f * sin(lightAngle)));
-
-  if (Input::isKeyPressed(sf::Keyboard::Num1))
-  {
-    lights[0]->toggle();
-    Input::setKeyPressed(sf::Keyboard::Num1, false);
-  }
-  else if (Input::isKeyPressed(sf::Keyboard::Num2))
-  {
-    lights[1]->toggle();
-    Input::setKeyPressed(sf::Keyboard::Num2, false);
-  }
-
   player->update();
-  lights[1]->setLightPosition(player->getPosition() + glm::vec3(0.0f, 100.0f, 0.0f));
+
+  if (Input::isKeyPressed(sf::Keyboard::G))
+  {
+    GLightsEnabled = !GLightsEnabled;
+
+    if (GLightsEnabled)
+    {
+      glEnable(GL_LIGHTING);
+      glEnable(GL_COLOR_MATERIAL);
+    }
+    else
+    {
+      glDisable(GL_LIGHTING);
+      glDisable(GL_COLOR_MATERIAL);
+    }
+
+    Input::setKeyPressed(sf::Keyboard::G, false);
+  }
+
+  lightAngle += 0.1f;
+  if (!GLightsEnabled)
+  {
+    for (auto &light : lights)
+    {
+      light->setViewMatrix(viewMatrix);
+      light->setProjectionMatrix(projectionMatrix);
+    }
+    lights[0]->setLightPosition(glm::vec3(200.0f * cos(lightAngle), 1000.0f, 200.0f * sin(lightAngle)));
+
+    if (Input::isKeyPressed(sf::Keyboard::Num1))
+    {
+      lights[0]->toggle();
+      Input::setKeyPressed(sf::Keyboard::Num1, false);
+    }
+    else if (Input::isKeyPressed(sf::Keyboard::Num2))
+    {
+      lights[1]->toggle();
+      Input::setKeyPressed(sf::Keyboard::Num2, false);
+    }
+    lights[1]->setLightPosition(player->getPosition() + glm::vec3(0.0f, 100.0f, 0.0f));
+  }
+  else
+  {
+    glights[0]->setPosition(glm::vec4(200.0f * cos(lightAngle), 500.0f, 200.0f * sin(lightAngle), 1.0f));
+    glights[1]->setPosition(glm::vec4(-200.0f * cos(lightAngle), 500.0f, -200.0f * sin(lightAngle), 1.0f));
+
+    if (Input::isKeyPressed(sf::Keyboard::Num1))
+    {
+      glights[0]->toggleVisible();
+      Input::setKeyPressed(sf::Keyboard::Num1, false);
+    }
+    else if (Input::isKeyPressed(sf::Keyboard::Num2))
+    {
+      glights[1]->toggleVisible();
+      Input::setKeyPressed(sf::Keyboard::Num2, false);
+    }
+    glights[2]->setPosition(glm::vec4(player->getPosition() + glm::vec3(0.0f, 100.0f, 0.0f), 1.0f));
+  }
 
   deltaTime = clock.restart().asSeconds();
 }
@@ -242,8 +298,12 @@ void Game::render()
 
   player->draw();
 
-  for (auto &light : lights)
-    light->draw();
+  if (GLightsEnabled)
+    for (auto &light : glights)
+      light->drawLight();
+  else
+    for (auto &light : lights)
+      light->draw();
 
   window->display();
 }

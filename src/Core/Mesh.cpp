@@ -53,8 +53,11 @@ void Mesh::updateColorBuffer()
 
 void Mesh::render(glm::mat4 modelMatrix)
 {
-  this->modelMatrix = modelMatrix;
-  updateColorBuffer();
+  if (!Game::GLightsEnabled)
+  {
+    this->modelMatrix = modelMatrix;
+    updateColorBuffer();
+  }
 
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
   glEnableClientState(GL_VERTEX_ARRAY);

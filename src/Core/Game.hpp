@@ -14,6 +14,7 @@
 #include "Input.hpp"
 #include "Model.hpp"
 #include "Light.hpp"
+#include "GLight.hpp"
 #include "MousePicker.hpp"
 #include "OBJLoader.hpp"
 #include "Mesh.hpp"
@@ -59,4 +60,7 @@ public:
   static Terrain *terrain;
   static std::map<std::string, Mesh *> models;
   static std::vector<Light *> lights;
+  static std::vector<GLight *> glights;
+
+  static bool GLightsEnabled;
 };
