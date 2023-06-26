@@ -3,7 +3,7 @@
 Terrain::Terrain(int gridX, int gridZ)
 {
   size = 2000;
-  tileSize = 100;
+  tileSize = 200;
   vertexCount = 128;
 
   x = gridX * size;
@@ -18,7 +18,7 @@ Terrain::~Terrain()
 
 void Terrain::draw()
 {
-  Texture::bindByName("wall");
+  Texture::bindByName("rock");
   glm::mat4 modelMatrix = glm::mat4(1.0f);
 
   for (int i = -size; i < size; i += tileSize)

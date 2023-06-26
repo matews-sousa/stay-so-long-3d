@@ -51,19 +51,36 @@ Game::~Game()
 void Game::initTextures()
 {
   Texture *texture = new Texture("../src/Assets/Textures/container.jpg", "container");
+  texture = new Texture("../src/Assets/Textures/stone.jpg", "stone");
+  texture = new Texture("../src/Assets/Textures/rock.jpg", "rock");
   texture = new Texture("../src/Assets/Textures/wall.jpg", "wall");
   texture = new Texture("../src/Assets/Textures/awesomeface.png", "awesomeface");
   texture = new Texture("../src/Assets/Textures/Mecha01.png", "mecha");
+  texture = new Texture("../src/Assets/Textures/MechaGolem.png", "golem");
   texture = new Texture("../src/Assets/Textures/TallBuilding01.png", "building");
   texture = new Texture("../src/Assets/Textures/spaceship6_normal_tangent_bevel.png", "spaceship");
+  texture = new Texture("../src/Assets/Textures/T_Weapons.png", "weapons");
+  texture = new Texture("../src/Assets/Textures/MicroRecon.png", "micro_recon");
+  texture = new Texture("../src/Assets/Textures/InterstellarRunner.png", "runner");
+  texture = new Texture("../src/Assets/Textures/Transtellar.png", "stellar");
+
+  // scenary textures
+  texture = new Texture("../src/Assets/Textures/MountainRocks-0.png", "mountain");
 }
 
 void Game::initObjModels()
 {
   models["cube"] = new Mesh("../src/Assets/Models/cube.obj");
   models["mecha"] = new Mesh("../src/Assets/Models/mecha.obj");
+  models["golem"] = new Mesh("../src/Assets/Models/MechaGolem.obj");
   models["spaceship"] = new Mesh("../src/Assets/Models/Spaceship6.obj");
   models["building"] = new Mesh("../src/Assets/Models/building.obj");
+  models["micro_recon"] = new Mesh("../src/Assets/Models/MicroRecon.obj");
+  models["runner"] = new Mesh("../src/Assets/Models/InterstellarRunner.obj");
+  models["stellar"] = new Mesh("../src/Assets/Models/Transtellar.obj");
+
+  // scenary models
+  models["mountain"] = new Mesh("../src/Assets/Models/MountainRocks-0.obj");
 }
 
 void Game::initLights()
@@ -148,13 +165,16 @@ void Game::update()
   }
 
   player->update();
-  lights[1]->setLightPosition(player->getPosition() + glm::vec3(0.0f, 50.0f, 0.0f));
+  lights[1]->setLightPosition(player->getPosition() + glm::vec3(0.0f, 100.0f, 0.0f));
 
   deltaTime = clock.restart().asSeconds();
 }
 
 void Game::render()
 {
+  Mesh &runner1 = *models["runner"];
+  Mesh &runner2 = *models["runner"];
+
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   // draw axis
@@ -176,12 +196,12 @@ void Game::render()
 
   glm::mat4 modelMatrix = glm::mat4(1.0f);
 
-  Texture::bindByName("container");
+/*   Texture::bindByName("stellar");
   glPushMatrix();
   modelMatrix = glm::translate(modelMatrix, glm::vec3(250.0f, 50.0f, 250.0f));
   modelMatrix = glm::scale(modelMatrix, glm::vec3(50.0f, 50.0f, 50.0f));
   glMultMatrixf(glm::value_ptr(modelMatrix));
-  models["cube"]->render(modelMatrix);
+  models["stellar"]->render(modelMatrix);
   glPopMatrix();
 
   Texture::bindByName("building");
@@ -191,6 +211,33 @@ void Game::render()
   modelMatrix = glm::scale(modelMatrix, glm::vec3(25.0f, 25.0f, 25.0f));
   glMultMatrixf(glm::value_ptr(modelMatrix));
   models["building"]->render(modelMatrix);
+  glPopMatrix(); */
+
+  Texture::bindByName("wall");
+  glPushMatrix();
+  modelMatrix = glm::mat4(1.0f);
+  modelMatrix = glm::translate(modelMatrix, glm::vec3(-150.0f, 50.0f, -150.0f));
+  modelMatrix = glm::scale(modelMatrix, glm::vec3(50.0f, 50.0f, 50.0f));
+  glMultMatrixf(glm::value_ptr(modelMatrix));
+  models["cube"]->render(modelMatrix);
+  glPopMatrix();
+
+  Texture::bindByName("runner");
+  glPushMatrix();
+  modelMatrix = glm::mat4(1.0f);
+  modelMatrix = glm::translate(modelMatrix, glm::vec3(-150.0f, -25.0f, -150.0f));
+  modelMatrix = glm::scale(modelMatrix, glm::vec3(50.0f, 50.0f, 50.0f));
+  glMultMatrixf(glm::value_ptr(modelMatrix));
+  runner1.render(modelMatrix);
+  glPopMatrix();
+
+  Texture::bindByName("runner");
+  glPushMatrix();
+  modelMatrix = glm::mat4(1.0f);
+  modelMatrix = glm::translate(modelMatrix, glm::vec3(250.0f, -25.0f, 250.0f));
+  modelMatrix = glm::scale(modelMatrix, glm::vec3(50.0f, 50.0f, 50.0f));
+  glMultMatrixf(glm::value_ptr(modelMatrix));
+  runner2.render(modelMatrix);
   glPopMatrix();
 
   player->draw();
