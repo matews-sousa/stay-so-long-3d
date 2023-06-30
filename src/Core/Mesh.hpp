@@ -12,13 +12,16 @@
 #include "Game.hpp"
 #include "Light.hpp"
 
+const bool CALCULATE_ILLUMINATION = true;
+const bool SKIP_ILLUMINATION = false;
+
 class Mesh
 {
 public:
   Mesh(std::string fileName);
   virtual ~Mesh();
 
-  void render(glm::mat4 modelMatrix);
+  void render(glm::mat4 modelMatrix, bool calculateIllumination = false);
   void updateColorBufferThread(int start, int end);
   void updateColorBuffer();
 

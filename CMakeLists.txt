@@ -18,7 +18,6 @@ set(SOURCES
   src/Core/Texture.cpp
   src/Core/Model.cpp
   src/Core/Light.cpp
-  src/Core/GLight.cpp
   src/Core/MousePicker.cpp
   src/Core/OBJLoader.cpp
   src/Core/Mesh.cpp

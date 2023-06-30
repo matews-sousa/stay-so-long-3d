@@ -18,12 +18,11 @@ Terrain::~Terrain()
 
 void Terrain::draw()
 {
-  Texture::bindByName("rock");
+  Texture::bindByName("stone2");
   glm::mat4 modelMatrix = glm::mat4(1.0f);
 
-  if (Game::GLightsEnabled)
+  if (false)
   {
-    tileSize = 50;
     for (int i = -size; i < size; i += tileSize)
     {
       for (int j = -size; j < size; j += tileSize)
@@ -39,7 +38,6 @@ void Terrain::draw()
   }
   else
   {
-    tileSize = 200;
     for (int i = -size; i < size; i += tileSize)
     {
       for (int j = -size; j < size; j += tileSize)

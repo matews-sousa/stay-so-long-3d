@@ -51,9 +51,9 @@ void Mesh::updateColorBuffer()
   glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void Mesh::render(glm::mat4 modelMatrix)
+void Mesh::render(glm::mat4 modelMatrix, bool calculateIllumination)
 {
-  if (!Game::GLightsEnabled)
+  if (calculateIllumination)
   {
     this->modelMatrix = modelMatrix;
     updateColorBuffer();

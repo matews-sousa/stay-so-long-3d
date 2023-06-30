@@ -43,6 +43,7 @@ public:
   glm::vec3 getAmbient() { return ambient; }
   glm::vec3 getDiffuse() { return diffuse; }
   glm::vec3 getSpecular() { return specular; }
+  bool getIsOn() { return isOn; }
 
   void setLightPosition(glm::vec3 lightPosition) { this->lightPosition = lightPosition; }
   void setAmbient(glm::vec3 ambient) { this->ambient = ambient; }
@@ -50,4 +51,5 @@ public:
   void setSpecular(glm::vec3 specular) { this->specular = specular; }
   void setViewMatrix(glm::mat4 viewMatrix) { this->viewMatrix = viewMatrix; }
   void setProjectionMatrix(glm::mat4 projectionMatrix) { this->projectionMatrix = projectionMatrix; }
+  void setIsOn(bool isOn) { this->isOn = isOn; }
 };
