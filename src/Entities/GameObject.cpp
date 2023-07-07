@@ -16,3 +16,10 @@ GameObject::~GameObject()
 {
 }
 
+glm::mat4 GameObject::getModelMatrix()
+{
+  modelMatrix = glm::mat4(1.0f);
+  modelMatrix = glm::translate(modelMatrix, this->position);
+  modelMatrix = glm::scale(modelMatrix, this->scale);
+  return modelMatrix;
+}

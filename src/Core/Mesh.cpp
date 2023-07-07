@@ -19,6 +19,18 @@ Mesh::~Mesh()
   glDeleteBuffers(1, &vbo);
 }
 
+void Mesh::setVertexColors(glm::vec3 colors)
+{
+  for (int i = 0; i < vertices.size(); i++)
+  {
+    vertices[i].color = colors;
+  }
+
+  glBindBuffer(GL_ARRAY_BUFFER, vbo);
+  glBufferSubData(GL_ARRAY_BUFFER, 0, vertices.size() * sizeof(Vertex), vertices.data());
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
 void Mesh::updateColorBufferThread(int start, int end)
 {
   for (int i = start; i < end; i++)

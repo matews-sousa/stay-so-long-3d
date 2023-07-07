@@ -25,6 +25,8 @@ public:
   void updateColorBufferThread(int start, int end);
   void updateColorBuffer();
 
+  void setVertexColors(glm::vec3 color);
+
 private:
   GLuint vbo;
 
