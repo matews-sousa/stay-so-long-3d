@@ -11,6 +11,9 @@
 #include "../Core/Game.hpp"
 #include "../Core/Input.hpp"
 #include "../Core/MousePicker.hpp"
+#include "Bullet.hpp"
+
+class Bullet;
 
 class Player : public GameObject
 {
@@ -22,6 +25,13 @@ private:
   glm::mat4 localMatrix;
   float speed;
   float rotation;
+
+  float shootCooldown;
+  float maxShootCooldown;
+  std::vector<Bullet*> bullets;
+
+  void shoot();
+  void handleShots();
 
 public:
   Player(glm::vec3 position, glm::vec3 scale);

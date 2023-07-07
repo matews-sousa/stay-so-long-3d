@@ -9,6 +9,9 @@ Player::Player(glm::vec3 position, glm::vec3 scale) : GameObject(position, scale
   this->right = glm::vec3(1.0f, 0.0f, 0.0f);
   this->up = glm::vec3(0.0f, 1.0f, 0.0f);
 
+  this->shootCooldown = 0.0f;
+  this->maxShootCooldown = 0.5f;
+
   updateLocalMatrix();
 }
 
@@ -72,6 +75,7 @@ void Player::update()
 
   this->move(direction);
   this->look();
+  this->handleShots();
 
   updateLocalMatrix();
 
@@ -103,8 +107,39 @@ void Player::look()
   this->right = right;
 }
 
+void Player::shoot()
+{
+  Bullet* bullet = new Bullet(1000.0f, this->forward, this->position + glm::vec3(0.0f, 30.0f, 0.0f), glm::vec3(15.0f, 15.0f, 15.0f));
+  bullets.push_back(bullet);
+}
+
+void Player::handleShots()
+{
+  shootCooldown += Game::deltaTime;
+  if (shootCooldown >= maxShootCooldown && Input::isMouseButtonDown(sf::Mouse::Left))
+  {
+    shoot();
+    shootCooldown = 0.0f;
+  }
+
+  for (auto &bullet : bullets)
+    bullet->update();
+
+  if (bullets.size() > 0)
+  {
+    auto i = std::remove_if(bullets.begin(), bullets.end(), [](Bullet* bullet) {
+      return bullet->getLifeTime() >= bullet->getMaxLifeTime();
+    });
+
+    bullets.erase(i, bullets.end());
+  }
+}
+
 void Player::draw()
 {
+  for (auto &bullet : bullets)
+    bullet->draw();
+
   glm::mat4 model = glm::mat4(1.0f);
   model = glm::rotate(model, glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
   model = glm::scale(model, this->scale);

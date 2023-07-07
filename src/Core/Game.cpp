@@ -67,6 +67,7 @@ void Game::initTextures()
 void Game::initObjModels()
 {
   models["cube"] = new Mesh("../src/Assets/Models/cube.obj");
+  models["sphere"] = new Mesh("../src/Assets/Models/sphere.obj");
   models["mecha"] = new Mesh("../src/Assets/Models/mecha.obj");
   models["building"] = new Mesh("../src/Assets/Models/building.obj");
   models["micro_recon"] = new Mesh("../src/Assets/Models/MicroRecon.obj");
