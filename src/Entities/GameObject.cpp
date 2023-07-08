@@ -20,6 +20,9 @@ glm::mat4 GameObject::getModelMatrix()
 {
   modelMatrix = glm::mat4(1.0f);
   modelMatrix = glm::translate(modelMatrix, this->position);
+  modelMatrix = glm::rotate(modelMatrix, this->rotation.x, glm::vec3(1.0f, 0.0f, 0.0f));
+  modelMatrix = glm::rotate(modelMatrix, this->rotation.y, glm::vec3(0.0f, 1.0f, 0.0f));
+  modelMatrix = glm::rotate(modelMatrix, this->rotation.z, glm::vec3(0.0f, 0.0f, 1.0f));
   modelMatrix = glm::scale(modelMatrix, this->scale);
   return modelMatrix;
 }

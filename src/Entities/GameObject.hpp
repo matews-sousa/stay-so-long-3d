@@ -9,6 +9,7 @@ class GameObject
 protected:
   glm::vec3 position;
   glm::vec3 scale;
+  glm::vec3 rotation;
 
   glm::mat4 modelMatrix;
 
@@ -21,7 +22,9 @@ public:
 
   glm::vec3 getPosition() { return this->position; }
   glm::vec3 getScale() { return this->scale; }
+  glm::vec3 getRotation() { return this->rotation; }
 
   void setPosition(glm::vec3 position) { this->position = position; }
   void setScale(glm::vec3 scale) { this->scale = scale; }
+  void setRotation(glm::vec3 rotation) { this->rotation = rotation; }
 };
