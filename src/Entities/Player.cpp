@@ -131,7 +131,8 @@ void Player::handleShots()
       return bullet->getLifeTime() >= bullet->getMaxLifeTime();
     });
 
-    bullets.erase(i, bullets.end());
+    if (i != bullets.end())
+      bullets.erase(i, bullets.end());
   }
 }
 

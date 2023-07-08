@@ -6,15 +6,17 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <cmath>
 #include <iostream>
+#include "CubeCollider.hpp"
+#include "SphereCollider.hpp"
+
+class CubeCollider;
+class SphereCollider;
 
 namespace Utils
 {
-  static bool isInFrustum(glm::mat4 matrix, glm::vec3 position)
-  {
-    glm::vec4 pClip = matrix * glm::vec4(position, 1.0f);
-    return std::abs(pClip.x) < pClip.w &&
-           std::abs(pClip.y) < pClip.w &&
-           0 < pClip.z &&
-           std::abs(pClip.z) < pClip.w;
-  }
+  bool isInFrustum(glm::mat4 matrix, glm::vec3 position);
+
+  bool SphereSphereCollision(const SphereCollider *a, const SphereCollider *b);
+  bool CubeCubeCollision(const CubeCollider *a, const CubeCollider *b);
+  bool SphereCubeCollision(const SphereCollider *a, const CubeCollider *b);
 };

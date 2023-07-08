@@ -7,6 +7,11 @@ Enemy::Enemy(glm::vec3 initialPosition, glm::vec3 scale)
   speed = 200.0f;
 
   mesh = new Mesh("../src/Assets/Models/cube.obj");
+
+  collider = new CubeCollider(this->position, scale);
+
+  maxHealth = 100;
+  currentHealth = maxHealth;
 }
 
 Enemy::~Enemy()
@@ -22,6 +27,8 @@ void Enemy::update(glm::vec3 playerPosition)
 
   position += direction * speed * Game::deltaTime;
   position.y = targetY;
+
+  collider->setPosition(position);
 }
 
 void Enemy::draw()
@@ -37,4 +44,6 @@ void Enemy::draw()
   glMultMatrixf(glm::value_ptr(getModelMatrix()));
   mesh->render(getModelMatrix(), CALCULATE_ILLUMINATION);
   glPopMatrix();
+
+  collider->debug();
 }

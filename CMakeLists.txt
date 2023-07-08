@@ -21,6 +21,10 @@ set(SOURCES
   src/Core/MousePicker.cpp
   src/Core/OBJLoader.cpp
   src/Core/Mesh.cpp
+  src/Core/Utils.cpp
+  src/Core/Collider.cpp
+  src/Core/CubeCollider.cpp
+  src/Core/SphereCollider.cpp
 
   src/Entities/GameObject.cpp
   src/Entities/Player.cpp
