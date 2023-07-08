@@ -19,6 +19,7 @@
 #include "Mesh.hpp"
 #include "../Entities/Player.hpp"
 #include "../Entities/Terrain.hpp"
+#include "../Entities/Enemy.hpp"
 #include "../primitives.hpp"
 
 class Player;

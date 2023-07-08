@@ -8,6 +8,8 @@ Terrain *Game::terrain;
 std::map<std::string, Mesh *> Game::models;
 std::vector<Light *> Game::lights;
 
+Enemy *enemy;
+
 Game::Game()
 {
   sf::ContextSettings settings;
@@ -36,6 +38,7 @@ Game::Game()
   initTextures();
   initObjModels();
 
+  enemy = new Enemy(glm::vec3(0.0f, 25.0f, 0.0f), glm::vec3(25.0f, 25.0f, 25.0f));
   terrain = new Terrain(0, 0);
   picker = new MousePicker(projectionMatrix, viewMatrix, *window, *terrain);
 }
@@ -134,6 +137,7 @@ void Game::update()
 
   picker->update(projectionMatrix, viewMatrix);
   player->update();
+  enemy->update(player->getPosition());
 
   lightAngle += 0.1f;
   for (auto &light : lights)
@@ -181,6 +185,8 @@ void Game::render()
   glColor3f(1.0f, 1.0f, 1.0f);
 
   terrain->draw();
+
+  enemy->draw();
 
   glm::mat4 modelMatrix = glm::mat4(1.0f);
 
