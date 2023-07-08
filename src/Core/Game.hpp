@@ -30,6 +30,8 @@ class Terrain;
 
 class Mesh;
 
+class Light;
+
 class Game
 {
 private:
@@ -60,4 +62,5 @@ public:
   static Terrain *terrain;
   static std::map<std::string, Mesh *> models;
   static std::vector<Light *> lights;
+  static bool debugMode;
 };

@@ -10,6 +10,8 @@ Bullet::Bullet(float speed, glm::vec3 direction, glm::vec3 initialPosition, glm:
   this->maxLifeTime = 1.5f;
 
   mesh = Game::models["sphere"];
+
+  collider = new SphereCollider(this->position, scale.x / 2);
 }
 
 Bullet::~Bullet()
@@ -22,6 +24,8 @@ void Bullet::update()
 
   this->velocity = this->direction * this->speed * Game::deltaTime;
   this->position += this->velocity;
+
+  collider->setPosition(this->position);
 }
 
 void Bullet::draw()
@@ -32,4 +36,6 @@ void Bullet::draw()
   glMultMatrixf(glm::value_ptr(this->getModelMatrix()));
   mesh->render(this->getModelMatrix(), CALCULATE_ILLUMINATION);
   glPopMatrix();
+
+  collider->debug();
 }

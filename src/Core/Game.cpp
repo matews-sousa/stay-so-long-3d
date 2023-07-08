@@ -7,8 +7,9 @@ float Game::deltaTime;
 Terrain *Game::terrain;
 std::map<std::string, Mesh *> Game::models;
 std::vector<Light *> Game::lights;
+bool Game::debugMode = false;
 
-Enemy *enemy;
+std::vector<Enemy *> enemies;
 
 Game::Game()
 {
@@ -38,7 +39,8 @@ Game::Game()
   initTextures();
   initObjModels();
 
-  enemy = new Enemy(glm::vec3(0.0f, 25.0f, 0.0f), glm::vec3(25.0f, 25.0f, 25.0f));
+  Enemy *enemy = new Enemy(glm::vec3(0.0f, 25.0f, 0.0f), glm::vec3(25.0f, 25.0f, 25.0f));
+  enemies.push_back(enemy);
   terrain = new Terrain(0, 0);
   picker = new MousePicker(projectionMatrix, viewMatrix, *window, *terrain);
 }
@@ -128,7 +130,7 @@ void Game::update()
     processEvents();
   }
 
-  std::cout << "FPS: " << 1.0f / deltaTime << std::endl;
+  //std::cout << "FPS: " << 1.0f / deltaTime << std::endl;
 
   viewMatrix = camera->getViewMatrix();
   glMatrixMode(GL_MODELVIEW);
@@ -137,7 +139,9 @@ void Game::update()
 
   picker->update(projectionMatrix, viewMatrix);
   player->update();
-  enemy->update(player->getPosition());
+
+  for (auto &enemy : enemies)
+    enemy->update(player->getPosition());
 
   lightAngle += 0.1f;
   for (auto &light : lights)
@@ -146,6 +150,12 @@ void Game::update()
     light->setProjectionMatrix(projectionMatrix);
   }
   lights[0]->setLightPosition(glm::vec3(200.0f * cos(lightAngle), 1000.0f, 200.0f * sin(lightAngle)));
+
+  if (Input::isKeyPressed(sf::Keyboard::M))
+  {
+    debugMode = !debugMode;
+    Input::setKeyPressed(sf::Keyboard::M, false);
+  }
 
   if (Input::isKeyPressed(sf::Keyboard::Num1))
   {
@@ -158,6 +168,26 @@ void Game::update()
     Input::setKeyPressed(sf::Keyboard::Num2, false);
   }
   lights[1]->setLightPosition(player->getPosition() + glm::vec3(0.0f, 150.0f, 0.0f));
+
+  for (auto &bullet : player->getBullets())
+  {
+    for (auto &enemy : enemies)
+    {
+      if (enemy->collider->testCollision(*bullet->collider))
+      {
+        bullet->setLifeTime(bullet->getMaxLifeTime());
+        enemy->takeDamage(10);
+      }
+    }
+  }
+
+  if (enemies.size() > 0)
+  {
+    auto i = std::remove_if(enemies.begin(), enemies.end(), [](Enemy *enemy) { return enemy->isDead(); });
+
+    if (i != enemies.end())
+      enemies.erase(i);
+  }
 
   deltaTime = clock.restart().asSeconds();
 }
@@ -186,7 +216,8 @@ void Game::render()
 
   terrain->draw();
 
-  enemy->draw();
+  for (auto &enemy : enemies)
+    enemy->draw();
 
   glm::mat4 modelMatrix = glm::mat4(1.0f);
 

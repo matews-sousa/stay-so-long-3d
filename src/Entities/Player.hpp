@@ -49,4 +49,6 @@ public:
   void setForward(glm::vec3 forward) { this->forward = forward; }
 
   void updateLocalMatrix();
+
+  std::vector<Bullet*> getBullets() { return this->bullets; }
 };

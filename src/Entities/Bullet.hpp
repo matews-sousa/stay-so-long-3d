@@ -5,8 +5,10 @@
 #include <glm/mat4x4.hpp>
 #include "../Core/Game.hpp"
 #include "../Core/Mesh.hpp"
+#include "../Core/SphereCollider.hpp"
 
 class Mesh;
+class SphereCollider;
 
 class Bullet : public GameObject
 {
@@ -29,6 +31,8 @@ public:
   void setMaxLifeTime(float maxLifeTime) { this->maxLifeTime = maxLifeTime; }
   float getMaxLifeTime() { return this->maxLifeTime; }
 
+  SphereCollider *collider;
+  
 private:
   glm::vec3 velocity;
   glm::vec3 direction;
