@@ -2,8 +2,8 @@
 
 CubeCollider::CubeCollider(glm::vec3 position, glm::vec3 size) : Collider(position, size)
 {
-  this->minBB = position - size / 2.0f;
-  this->maxBB = position + size / 2.0f;
+  minBB = glm::vec3(position.x - size.x, position.y - size.y, position.z - size.z);
+  maxBB = glm::vec3(position.x + size.x, position.y + size.y, position.z + size.z);
 
   mesh = Game::models["cube"];
 }
@@ -22,7 +22,7 @@ void CubeCollider::debug()
   mesh->setVertexColors(glm::vec3(1.0f, 0.0f, 0.0f));
   glPushMatrix();
   glTranslatef(position.x, position.y, position.z);
-  glScalef(size.x * 1.1f, size.y * 1.1f, size.z * 1.1f);
+  glScalef(size.x * 1.0f, size.y * 1.0f, size.z * 1.0f);
   mesh->render(glm::mat4(1.0f));
   glPopMatrix();
   glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -42,8 +42,9 @@ void CubeCollider::debug()
   
   glPointSize(10.0f);
   glBegin(GL_POINTS);
-  glColor3f(1.0f, 0.0f, 0.0f);
+  glColor3f(1.0f, 1.0f, 0.0f);
   glVertex3f(minBB.x, minBB.y, minBB.z);
+  glColor3f(0.0f, 1.0f, 1.0f);
   glVertex3f(maxBB.x, maxBB.y, maxBB.z);
   glEnd();
 }

@@ -17,7 +17,7 @@ public:
   Enemy(glm::vec3 initialPosition, glm::vec3 scale);
   virtual ~Enemy();
 
-  CubeCollider *collider;
+  SphereCollider *collider;
   
   void update(glm::vec3 playerPosition);
   void draw();
@@ -31,6 +31,8 @@ public:
   void takeDamage(int damage) { this->currentHealth -= damage; }
 
   bool isDead() { return this->currentHealth <= 0; }
+
+  void setPosition(glm::vec3 position);
 
 private:
   Mesh *mesh;

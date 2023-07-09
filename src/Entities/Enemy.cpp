@@ -8,7 +8,7 @@ Enemy::Enemy(glm::vec3 initialPosition, glm::vec3 scale)
 
   mesh = new Mesh("../src/Assets/Models/cube.obj");
 
-  collider = new CubeCollider(this->position, scale);
+  collider = new SphereCollider(this->position, scale.x * 0.7f);
 
   maxHealth = 100;
   currentHealth = maxHealth;
@@ -46,4 +46,10 @@ void Enemy::draw()
   glPopMatrix();
 
   collider->debug();
+}
+
+void Enemy::setPosition(glm::vec3 position)
+{
+  this->position = position;
+  collider->setPosition(position);
 }
