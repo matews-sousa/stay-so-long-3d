@@ -7,6 +7,7 @@ float Game::deltaTime;
 Terrain *Game::terrain;
 std::map<std::string, Mesh *> Game::models;
 std::vector<Light *> Game::lights;
+std::map<std::string, sf::Text> Game::uiTexts;
 bool Game::debugMode = false;
 World *Game::world;
 
@@ -31,6 +32,14 @@ Game::Game()
     exit(1);
   }
 
+  font = new sf::Font();
+  if (!font->loadFromFile("../src/Assets/Fonts/roboto.ttf"))
+  {
+    std::cout << "Failed to load font" << std::endl;
+  }
+
+  initUiTexts();
+
   world = new World();
 
   init();
@@ -48,6 +57,27 @@ Game::~Game()
   delete world;
   delete camera;
   models.clear();
+}
+
+void Game::initUiTexts()
+{
+  auto addText = [](std::string name)
+  {
+    uiTexts.insert(std::pair<std::string, sf::Text>(name, sf::Text()));
+  };
+
+  addText("fps");
+  addText("waveTimer");
+
+  for (auto &text : uiTexts)
+  {
+    text.second.setFont(*font);
+    text.second.setCharacterSize(24);
+    text.second.setFillColor(sf::Color::White);
+  }
+
+  uiTexts["fps"].setPosition(0.0f, 0.0f);
+  uiTexts["waveTimer"].setPosition(0.0f, 30.0f);
 }
 
 void Game::initTextures()
@@ -126,7 +156,10 @@ void Game::update()
     processEvents();
   }
 
-  //std::cout << "FPS: " << 1.0f / deltaTime << std::endl;
+  std::ostringstream out;
+  out.precision(2);
+  out << std::fixed << 1.0f / deltaTime;
+  uiTexts["fps"].setString("FPS: " + out.str());
 
   viewMatrix = camera->getViewMatrix();
   glMatrixMode(GL_MODELVIEW);
@@ -169,7 +202,7 @@ void Game::update()
 void Game::render()
 {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+  
   // draw axis
   glBegin(GL_LINES);
   glColor3f(1.0f, 0.0f, 0.0f);
@@ -191,6 +224,15 @@ void Game::render()
 
   for (auto &light : lights)
     light->draw();
+
+  window->pushGLStates();
+
+  for (auto &text : uiTexts)
+  {
+    window->draw(text.second);
+  }
+
+  window->popGLStates();
 
   window->display();
 }
