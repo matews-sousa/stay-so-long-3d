@@ -123,7 +123,18 @@ void Player::handleShots()
   }
 
   for (auto &bullet : bullets)
+  {
     bullet->update();
+
+    for (auto &enemy : World::enemies)
+    {
+      if (bullet->collider->testCollision(*enemy->collider))
+      {
+        enemy->takeDamage(10);
+        bullet->setLifeTime(bullet->getMaxLifeTime());
+      }
+    }
+  }
 
   if (bullets.size() > 0)
   {

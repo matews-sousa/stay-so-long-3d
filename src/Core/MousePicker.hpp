@@ -2,9 +2,10 @@
 
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <glm/glm.hpp>
+#include "World.hpp"
+#include "Game.hpp"
 #include "Input.hpp"
 #include "../Entities/Terrain.hpp"
-#include "Game.hpp"
 
 class Terrain;
 
