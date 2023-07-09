@@ -8,8 +8,7 @@ Terrain *Game::terrain;
 std::map<std::string, Mesh *> Game::models;
 std::vector<Light *> Game::lights;
 bool Game::debugMode = false;
-
-std::vector<Enemy *> enemies;
+World *Game::world;
 
 Game::Game()
 {
@@ -32,15 +31,13 @@ Game::Game()
     exit(1);
   }
 
-  player = new Player(glm::vec3(0.0f, 35.0f, 0.0f), glm::vec3(15.0f, 15.0f, 15.0f));
+  world = new World();
 
   init();
   initLights();
   initTextures();
   initObjModels();
 
-  Enemy *enemy = new Enemy(glm::vec3(0.0f, 25.0f, 0.0f), glm::vec3(25.0f, 25.0f, 25.0f));
-  enemies.push_back(enemy);
   terrain = new Terrain(0, 0);
   picker = new MousePicker(projectionMatrix, viewMatrix, *window, *terrain);
 }
@@ -48,7 +45,7 @@ Game::Game()
 Game::~Game()
 {
   delete window;
-  delete player;
+  delete world;
   delete camera;
   models.clear();
 }
@@ -83,7 +80,7 @@ void Game::initObjModels()
 void Game::initLights()
 {
   lights.push_back(new Light(glm::vec3(200.0f, 500.0f, 200.0f), glm::vec3(0.2f, 0.2f, 0.2f), glm::vec3(1.0f, 1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 0.0f), LightType::SPOT_LIGHT));
-  lights.push_back(new Light(player->getPosition(), glm::vec3(0.2f, 0.2f, 0.2f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f)));
+  lights.push_back(new Light(world->player->getPosition(), glm::vec3(0.2f, 0.2f, 0.2f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f)));
   
   for (auto &light : lights)
     light->setViewMatrix(viewMatrix);
@@ -138,10 +135,8 @@ void Game::update()
   glMultMatrixf(glm::value_ptr(viewMatrix));
 
   picker->update(projectionMatrix, viewMatrix);
-  player->update();
 
-  for (auto &enemy : enemies)
-    enemy->update(player->getPosition());
+  world->update();
 
   lightAngle += 0.1f;
   for (auto &light : lights)
@@ -167,27 +162,7 @@ void Game::update()
     lights[1]->toggle();
     Input::setKeyPressed(sf::Keyboard::Num2, false);
   }
-  lights[1]->setLightPosition(player->getPosition() + glm::vec3(0.0f, 150.0f, 0.0f));
-
-  for (auto &bullet : player->getBullets())
-  {
-    for (auto &enemy : enemies)
-    {
-      if (enemy->collider->testCollision(*bullet->collider))
-      {
-        bullet->setLifeTime(bullet->getMaxLifeTime());
-        enemy->takeDamage(10);
-      }
-    }
-  }
-
-  if (enemies.size() > 0)
-  {
-    auto i = std::remove_if(enemies.begin(), enemies.end(), [](Enemy *enemy) { return enemy->isDead(); });
-
-    if (i != enemies.end())
-      enemies.erase(i);
-  }
+  lights[1]->setLightPosition(world->player->getPosition() + glm::vec3(0.0f, 150.0f, 0.0f));
 
   deltaTime = clock.restart().asSeconds();
 }
@@ -195,7 +170,6 @@ void Game::update()
 void Game::render()
 {
   Mesh &runner1 = *models["runner"];
-  Mesh &runner2 = *models["runner"];
 
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -216,28 +190,7 @@ void Game::render()
 
   terrain->draw();
 
-  for (auto &enemy : enemies)
-    enemy->draw();
-
   glm::mat4 modelMatrix = glm::mat4(1.0f);
-
-/*   Texture::bindByName("stellar");
-  glPushMatrix();
-  modelMatrix = glm::translate(modelMatrix, glm::vec3(250.0f, 50.0f, 250.0f));
-  modelMatrix = glm::scale(modelMatrix, glm::vec3(50.0f, 50.0f, 50.0f));
-  glMultMatrixf(glm::value_ptr(modelMatrix));
-  models["stellar"]->render(modelMatrix);
-  glPopMatrix();
-
-  Texture::bindByName("building");
-  glPushMatrix();
-  modelMatrix = glm::mat4(1.0f);
-  modelMatrix = glm::translate(modelMatrix, glm::vec3(150.0f, 0.0f, 150.0f));
-  modelMatrix = glm::scale(modelMatrix, glm::vec3(25.0f, 25.0f, 25.0f));
-  glMultMatrixf(glm::value_ptr(modelMatrix));
-  models["building"]->render(modelMatrix, CALCULATE_ILLUMINATION);
-  glPopMatrix(); 
-  */
 
   Texture::bindByName("wall");
   glPushMatrix();
@@ -251,22 +204,13 @@ void Game::render()
   Texture::bindByName("runner");
   glPushMatrix();
   modelMatrix = glm::mat4(1.0f);
-  modelMatrix = glm::translate(modelMatrix, glm::vec3(-150.0f, -25.0f, -150.0f));
+  modelMatrix = glm::translate(modelMatrix, glm::vec3(250.0f, -25.0f, 250.0f));
   modelMatrix = glm::scale(modelMatrix, glm::vec3(50.0f, 50.0f, 50.0f));
   glMultMatrixf(glm::value_ptr(modelMatrix));
   runner1.render(modelMatrix);
   glPopMatrix();
 
-  Texture::bindByName("runner");
-  glPushMatrix();
-  modelMatrix = glm::mat4(1.0f);
-  modelMatrix = glm::translate(modelMatrix, glm::vec3(250.0f, -25.0f, 250.0f));
-  modelMatrix = glm::scale(modelMatrix, glm::vec3(50.0f, 50.0f, 50.0f));
-  glMultMatrixf(glm::value_ptr(modelMatrix));
-  runner2.render(modelMatrix);
-  glPopMatrix();
-
-  player->draw();
+  world->render();
 
   for (auto &light : lights)
     light->draw();

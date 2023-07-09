@@ -9,6 +9,7 @@
 #include <glm/gtx/string_cast.hpp>
 #include "GameObject.hpp"
 #include "../Core/Game.hpp"
+#include "../Core/World.hpp"
 #include "../Core/Input.hpp"
 #include "../Core/MousePicker.hpp"
 #include "Bullet.hpp"

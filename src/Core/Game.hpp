@@ -17,19 +17,13 @@
 #include "MousePicker.hpp"
 #include "OBJLoader.hpp"
 #include "Mesh.hpp"
-#include "../Entities/Player.hpp"
-#include "../Entities/Terrain.hpp"
-#include "../Entities/Enemy.hpp"
+#include "World.hpp"
 #include "../primitives.hpp"
 
-class Player;
-
-class MousePicker;
-
+class World;
 class Terrain;
-
+class MousePicker;
 class Mesh;
-
 class Light;
 
 class Game
@@ -39,7 +33,6 @@ private:
   glm::mat4 viewMatrix;
   sf::Clock clock;
   sf::Event event;
-  Player *player;
 
   void initTextures();
   void initObjModels();
@@ -63,4 +56,5 @@ public:
   static std::map<std::string, Mesh *> models;
   static std::vector<Light *> lights;
   static bool debugMode;
+  static World *world;
 };
