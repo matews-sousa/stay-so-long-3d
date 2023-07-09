@@ -13,7 +13,7 @@ class SphereCollider;
 class Bullet : public GameObject
 {
 public:
-  Bullet(float speed, glm::vec3 direction, glm::vec3 initialPosition, glm::vec3 scale);
+  Bullet(int damage, float speed, glm::vec3 direction, glm::vec3 initialPosition, glm::vec3 scale);
   ~Bullet();
 
   void update();
@@ -31,9 +31,13 @@ public:
   void setMaxLifeTime(float maxLifeTime) { this->maxLifeTime = maxLifeTime; }
   float getMaxLifeTime() { return this->maxLifeTime; }
 
+  void setDamage(int damage) { this->damage = damage; }
+  int getDamage() { return this->damage; }
+
   SphereCollider *collider;
   
 private:
+  int damage;
   glm::vec3 velocity;
   glm::vec3 direction;
   float speed;

@@ -1,20 +1,26 @@
 #include "World.hpp"
 
 Player *World::player;
+Spaceship *World::spaceship;
 std::vector<Enemy *> World::enemies;
 
 World::World()
 {
-  player = new Player(glm::vec3(0.0f, 35.0f, 0.0f), glm::vec3(15.0f, 15.0f, 15.0f));
+  player = new Player(glm::vec3(50.0f, 35.0f, 50.0f), glm::vec3(15.0f, 15.0f, 15.0f));
+  spaceship = new Spaceship(glm::vec3(0.0f, -25.0f, 0.0f), glm::vec3(50.0f, 50.0f, 50.0f));
 
   currentWave = 2;
-  timeBetweenWaves = 1.0f;
+  timeBetweenWaves = 10.0f;
   waveTimer = 0.0f;
 
-  spawnPoints.push_back(glm::vec3(500.0f, 25.0f, 0.0f));
-  spawnPoints.push_back(glm::vec3(-500.0f, 25.0f, 0.0f));
-  spawnPoints.push_back(glm::vec3(0.0f, 25.0f, 500.0f));
-  spawnPoints.push_back(glm::vec3(0.0f, 25.0f, -500.0f));
+  spawnPoints.push_back(glm::vec3(2000.0f, 0.0f, 0.0f));
+  spawnPoints.push_back(glm::vec3(-2000.0f, 0.0f, 0.0f));
+  spawnPoints.push_back(glm::vec3(0.0f, 0.0f, 2000.0f));
+  spawnPoints.push_back(glm::vec3(0.0f, 0.0f, -2000.0f));
+  spawnPoints.push_back(glm::vec3(2000.0f, 0.0f, 2000.0f));
+  spawnPoints.push_back(glm::vec3(2000.0f, 0.0f, -2000.0f));
+  spawnPoints.push_back(glm::vec3(-2000.0f, 0.0f, 2000.0f));
+  spawnPoints.push_back(glm::vec3(-2000.0f, 0.0f, -2000.0f));
 }
 
 World::~World()
@@ -26,6 +32,7 @@ World::~World()
 void World::update()
 {
   player->update();
+  spaceship->update();
 
   handleEnemies();
   handleWaves();
@@ -36,6 +43,8 @@ void World::render()
   player->draw();
   for (auto &enemy : enemies)
     enemy->draw();
+
+  spaceship->draw();
 
   for (auto &spawn : spawnPoints)
   {
@@ -52,6 +61,11 @@ void World::handleEnemies()
   for (auto &enemy : enemies)
   {
     enemy->update(player->getPosition());
+
+    if (enemy->collider->testCollision(*spaceship->collider))
+    {
+      enemy->takeDamage(enemy->getMaxHealth());
+    }
 
     for (auto &targetEnemy : enemies)
     {

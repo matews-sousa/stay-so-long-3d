@@ -4,9 +4,11 @@
 #include <vector>
 #include "../Entities/Player.hpp"
 #include "../Entities/Enemy.hpp"
+#include "../Entities/Spaceship.hpp"
 
 class Player;
 class Enemy;
+class Spaceship;
 
 class World
 {
@@ -18,6 +20,7 @@ public:
   void render();
 
   static Player *player;
+  static Spaceship *spaceship;
   static std::vector<Enemy *> enemies;
 
 private:

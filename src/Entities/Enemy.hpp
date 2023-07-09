@@ -28,6 +28,9 @@ public:
   glm::vec3 getDirection() { return this->direction; }
   float getSpeed() { return this->speed; }
 
+  int getCurrentHealth() { return this->currentHealth; }
+  int getMaxHealth() { return this->maxHealth; }
+
   void takeDamage(int damage) { this->currentHealth -= damage; }
 
   bool isDead() { return this->currentHealth <= 0; }

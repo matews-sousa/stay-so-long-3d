@@ -93,7 +93,6 @@ void Game::init()
   float halfWidth = window->getSize().x / 2.0f;
   float halfHeight = window->getSize().y / 2.0f;
 
-  //glm::mat4 projectionMatrix = glm::ortho(-halfWidth, halfWidth, -halfHeight, halfHeight, 0.1f, 2000.0f);
   projectionMatrix = glm::perspective(glm::radians(45.0f), (float)window->getSize().x / (float)window->getSize().y, 0.1f, 2000.0f);
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
@@ -169,8 +168,6 @@ void Game::update()
 
 void Game::render()
 {
-  Mesh &runner1 = *models["runner"];
-
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   // draw axis
@@ -189,26 +186,6 @@ void Game::render()
   glColor3f(1.0f, 1.0f, 1.0f);
 
   terrain->draw();
-
-  glm::mat4 modelMatrix = glm::mat4(1.0f);
-
-  Texture::bindByName("wall");
-  glPushMatrix();
-  modelMatrix = glm::mat4(1.0f);
-  modelMatrix = glm::translate(modelMatrix, glm::vec3(-150.0f, 50.0f, -150.0f));
-  modelMatrix = glm::scale(modelMatrix, glm::vec3(50.0f, 50.0f, 50.0f));
-  glMultMatrixf(glm::value_ptr(modelMatrix));
-  models["cube"]->render(modelMatrix, CALCULATE_ILLUMINATION);
-  glPopMatrix();
-
-  Texture::bindByName("runner");
-  glPushMatrix();
-  modelMatrix = glm::mat4(1.0f);
-  modelMatrix = glm::translate(modelMatrix, glm::vec3(250.0f, -25.0f, 250.0f));
-  modelMatrix = glm::scale(modelMatrix, glm::vec3(50.0f, 50.0f, 50.0f));
-  glMultMatrixf(glm::value_ptr(modelMatrix));
-  runner1.render(modelMatrix);
-  glPopMatrix();
 
   world->render();
 

@@ -4,7 +4,7 @@ SphereCollider::SphereCollider(glm::vec3 position, float radius) : Collider(posi
 {
   this->radius = radius;
 
-  mesh = Game::models["sphere"];
+  mesh = new Mesh("../src/Assets/Models/sphere.obj");
 }
 
 SphereCollider::~SphereCollider()

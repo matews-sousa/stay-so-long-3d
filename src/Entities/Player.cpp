@@ -109,7 +109,7 @@ void Player::look()
 
 void Player::shoot()
 {
-  Bullet* bullet = new Bullet(1000.0f, this->forward, this->position + glm::vec3(0.0f, 30.0f, 0.0f), glm::vec3(15.0f, 15.0f, 15.0f));
+  Bullet* bullet = new Bullet(25, 1000.0f, this->forward, this->position + glm::vec3(0.0f, 30.0f, 0.0f), glm::vec3(15.0f, 15.0f, 15.0f));
   bullets.push_back(bullet);
 }
 
@@ -130,7 +130,7 @@ void Player::handleShots()
     {
       if (bullet->collider->testCollision(*enemy->collider))
       {
-        enemy->takeDamage(10);
+        enemy->takeDamage(bullet->getDamage());
         bullet->setLifeTime(bullet->getMaxLifeTime());
       }
     }

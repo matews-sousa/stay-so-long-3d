@@ -1,6 +1,6 @@
 #include "Bullet.hpp"
 
-Bullet::Bullet(float speed, glm::vec3 direction, glm::vec3 initialPosition, glm::vec3 scale) : GameObject(initialPosition, scale)
+Bullet::Bullet(int damage, float speed, glm::vec3 direction, glm::vec3 initialPosition, glm::vec3 scale) : GameObject(initialPosition, scale)
 {
   this->velocity = glm::vec3(0.0f, 0.0f, 0.0f);
   this->speed = speed;
@@ -8,6 +8,7 @@ Bullet::Bullet(float speed, glm::vec3 direction, glm::vec3 initialPosition, glm:
 
   this->lifeTime = 0.0f;
   this->maxLifeTime = 1.5f;
+  this->damage = damage;
 
   mesh = Game::models["sphere"];
 

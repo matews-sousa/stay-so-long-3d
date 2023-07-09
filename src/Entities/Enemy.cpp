@@ -16,6 +16,8 @@ Enemy::Enemy(glm::vec3 initialPosition, glm::vec3 scale)
 
 Enemy::~Enemy()
 {
+  delete mesh;
+  delete collider;
 }
 
 void Enemy::update(glm::vec3 playerPosition)
