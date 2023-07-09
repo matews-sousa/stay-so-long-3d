@@ -56,7 +56,6 @@ public:
   static float deltaTime;
   static Terrain *terrain;
   static std::map<std::string, Mesh *> models;
-  static std::vector<Light *> lights;
   static bool debugMode;
   static std::map<std::string, sf::Text> uiTexts;
   static World *world;

@@ -35,7 +35,7 @@ void Mesh::updateColorBufferThread(int start, int end)
 {
   for (int i = start; i < end; i++)
   {
-    glm::vec3 illum = Light::calculateIllumination(Game::lights, vertices[i].position, vertices[i].normal, modelMatrix);
+    glm::vec3 illum = Light::calculateAllIllumination(vertices[i].position, vertices[i].normal, modelMatrix);
     vertices[i].color = illum;
   }
 }

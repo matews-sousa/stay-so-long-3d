@@ -1,11 +1,15 @@
 #include "Light.hpp"
 
+std::vector<Light *> Light::lights;
+
 Light::Light(glm::vec3 lightPosition, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular)
 {
   this->lightPosition = lightPosition;
   this->ambient = ambient;
   this->diffuse = diffuse;
   this->specular = specular;
+
+  lights.push_back(this);
 }
 
 Light::Light(glm::vec3 lightPosition, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, LightType type)
@@ -15,6 +19,8 @@ Light::Light(glm::vec3 lightPosition, glm::vec3 ambient, glm::vec3 diffuse, glm:
   this->diffuse = diffuse;
   this->specular = specular;
   this->type = type;
+
+  lights.push_back(this);
 }
 
 Light::~Light()
@@ -70,7 +76,7 @@ glm::vec3 Light::calculateIllumination(const glm::vec3 &vertexPosition, const gl
   return ambient + diff + spec;
 }
 
-glm::vec3 Light::calculateIllumination(std::vector<Light *> lights, const glm::vec3 &position, const glm::vec3 &normal, const glm::mat4 &modelMatrix)
+glm::vec3 Light::calculateAllIllumination(const glm::vec3 &position, const glm::vec3 &normal, const glm::mat4 &modelMatrix)
 {
   glm::vec3 illumination = glm::vec3(0.0f);
 

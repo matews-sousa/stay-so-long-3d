@@ -34,7 +34,7 @@ public:
   virtual ~Light();
 
   glm::vec3 calculateIllumination(const glm::vec3 &lightPosition, const glm::vec3 &normal, const glm::mat4 &modelMatrix);
-  static glm::vec3 calculateIllumination(std::vector<Light *> lights, const glm::vec3 &lightPosition, const glm::vec3 &normal, const glm::mat4 &modelMatrix);
+  static glm::vec3 calculateAllIllumination(const glm::vec3 &lightPosition, const glm::vec3 &normal, const glm::mat4 &modelMatrix);
   void draw();
 
   void toggle() { isOn = !isOn; }
@@ -52,4 +52,6 @@ public:
   void setViewMatrix(glm::mat4 viewMatrix) { this->viewMatrix = viewMatrix; }
   void setProjectionMatrix(glm::mat4 projectionMatrix) { this->projectionMatrix = projectionMatrix; }
   void setIsOn(bool isOn) { this->isOn = isOn; }
+
+  static std::vector<Light *> lights;
 };

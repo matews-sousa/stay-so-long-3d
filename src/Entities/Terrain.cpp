@@ -44,16 +44,16 @@ void Terrain::draw()
       {
         glBegin(GL_TRIANGLE_STRIP);
 
-        glm::vec3 illum = Light::calculateIllumination(Game::lights, glm::vec3(i, 0.0f, j), glm::vec3(0.0f, 1.0f, 0.0f), modelMatrix);
+        glm::vec3 illum = Light::calculateAllIllumination(glm::vec3(i, 0.0f, j), glm::vec3(0.0f, 1.0f, 0.0f), modelMatrix);
         glColor3fv(glm::value_ptr(illum)); glTexCoord2f(0.0f, 0.0f); glNormal3f(0.0f, 1.0f, 0.0f); glVertex3f(i, 0, j);
 
-        illum = Light::calculateIllumination(Game::lights, glm::vec3(i, 0.0f, j + tileSize), glm::vec3(0.0f, 1.0f, 0.0f), modelMatrix);
+        illum = Light::calculateAllIllumination(glm::vec3(i, 0.0f, j + tileSize), glm::vec3(0.0f, 1.0f, 0.0f), modelMatrix);
         glColor3fv(glm::value_ptr(illum)); glTexCoord2f(0.0f, 1.0f); glNormal3f(0.0f, 1.0f, 0.0f); glVertex3f(i, 0, j + tileSize);
 
-        illum = Light::calculateIllumination(Game::lights, glm::vec3(i + tileSize, 0.0f, j), glm::vec3(0.0f, 1.0f, 0.0f), modelMatrix);
+        illum = Light::calculateAllIllumination(glm::vec3(i + tileSize, 0.0f, j), glm::vec3(0.0f, 1.0f, 0.0f), modelMatrix);
         glColor3fv(glm::value_ptr(illum)); glTexCoord2f(1.0f, 0.0f); glNormal3f(0.0f, 1.0f, 0.0f); glVertex3f(i + tileSize, 0, j);
         
-        illum = Light::calculateIllumination(Game::lights, glm::vec3(i + tileSize, 0.0f, j + tileSize), glm::vec3(0.0f, 1.0f, 0.0f), modelMatrix);
+        illum = Light::calculateAllIllumination(glm::vec3(i + tileSize, 0.0f, j + tileSize), glm::vec3(0.0f, 1.0f, 0.0f), modelMatrix);
         glColor3fv(glm::value_ptr(illum)); glTexCoord2f(1.0f, 1.0f); glNormal3f(0.0f, 1.0f, 0.0f); glVertex3f(i + tileSize, 0, j + tileSize);
         
         glEnd();
