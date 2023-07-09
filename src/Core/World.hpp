@@ -22,5 +22,12 @@ public:
 
 private:
   void handleEnemies();
+  void handleWaves();
 
+  std::vector<glm::vec3> spawnPoints;
+
+  int currentWave;
+  float timeBetweenWaves;
+  float waveTimer;
+  std::vector<Enemy *> enemiesToSpawn;
 };
