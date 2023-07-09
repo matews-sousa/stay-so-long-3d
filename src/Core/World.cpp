@@ -26,6 +26,18 @@ World::~World()
 
 void World::update()
 {
+  if (waveTimer > 0.0f)
+  {
+    std::ostringstream out;
+    out.precision(2);
+    out << std::fixed << timeBetweenWaves - waveTimer;
+    Game::uiTexts["waveTimer"].setString("Next wave in: " + out.str());
+  }
+  else
+  {
+    Game::uiTexts["waveTimer"].setString("Wave: " + std::to_string(currentWave));
+  }
+
   player->update();
   spaceship->update();
 

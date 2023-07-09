@@ -33,7 +33,9 @@ private:
   glm::mat4 viewMatrix;
   sf::Clock clock;
   sf::Event event;
+  sf::Font *font;
 
+  void initUiTexts();
   void initTextures();
   void initObjModels();
   void initLights();
@@ -56,5 +58,6 @@ public:
   static std::map<std::string, Mesh *> models;
   static std::vector<Light *> lights;
   static bool debugMode;
+  static std::map<std::string, sf::Text> uiTexts;
   static World *world;
 };
