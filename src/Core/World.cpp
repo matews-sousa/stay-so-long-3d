@@ -13,14 +13,9 @@ World::World()
   timeBetweenWaves = 10.0f;
   waveTimer = 0.0f;
 
-  spawnPoints.push_back(glm::vec3(2000.0f, 0.0f, 0.0f));
-  spawnPoints.push_back(glm::vec3(-2000.0f, 0.0f, 0.0f));
   spawnPoints.push_back(glm::vec3(0.0f, 0.0f, 2000.0f));
-  spawnPoints.push_back(glm::vec3(0.0f, 0.0f, -2000.0f));
-  spawnPoints.push_back(glm::vec3(2000.0f, 0.0f, 2000.0f));
-  spawnPoints.push_back(glm::vec3(2000.0f, 0.0f, -2000.0f));
+  spawnPoints.push_back(glm::vec3(-2000.0f, 0.0f, 0.0f));
   spawnPoints.push_back(glm::vec3(-2000.0f, 0.0f, 2000.0f));
-  spawnPoints.push_back(glm::vec3(-2000.0f, 0.0f, -2000.0f));
 }
 
 World::~World()

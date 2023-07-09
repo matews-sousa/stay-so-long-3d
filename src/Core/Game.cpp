@@ -79,7 +79,7 @@ void Game::initObjModels()
 
 void Game::initLights()
 {
-  lights.push_back(new Light(glm::vec3(200.0f, 500.0f, 200.0f), glm::vec3(0.2f, 0.2f, 0.2f), glm::vec3(1.0f, 1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 0.0f), LightType::SPOT_LIGHT));
+  lights.push_back(new Light(glm::vec3(200.0f, 500.0f, 200.0f), glm::vec3(0.2f, 0.2f, 0.2f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), LightType::SPOT_LIGHT));
   lights.push_back(new Light(world->player->getPosition(), glm::vec3(0.2f, 0.2f, 0.2f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f)));
   
   for (auto &light : lights)
@@ -143,7 +143,7 @@ void Game::update()
     light->setViewMatrix(viewMatrix);
     light->setProjectionMatrix(projectionMatrix);
   }
-  lights[0]->setLightPosition(glm::vec3(200.0f * cos(lightAngle), 1000.0f, 200.0f * sin(lightAngle)));
+  lights[0]->setLightPosition(glm::vec3(200.0f * cos(lightAngle), 500.0f, 200.0f * sin(lightAngle)));
 
   if (Input::isKeyPressed(sf::Keyboard::M))
   {
