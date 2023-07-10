@@ -19,6 +19,7 @@ public:
   void update();
   void render();
 
+  static int score;
   static Player *player;
   static Spaceship *spaceship;
   static std::vector<Enemy *> enemies;

@@ -30,6 +30,9 @@ public:
   void update(glm::vec3 playerPosition);
   void draw();
 
+  ENEMY_TYPE getEnemyType() { return this->enemyType; }
+  void setEnemyType(ENEMY_TYPE type) { this->enemyType = type; }
+
   void setDirection(glm::vec3 direction) { this->direction = direction;}
   void setSpeed(float speed) { this->speed = speed; }
 
