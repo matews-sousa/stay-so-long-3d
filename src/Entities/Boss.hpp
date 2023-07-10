@@ -6,6 +6,9 @@
 #include "../Core/Mesh.hpp"
 #include "../Core/Texture.hpp"
 #include "../Core/World.hpp"
+#include "../Core/CubeCollider.hpp"
+
+class CubeCollider;
 
 class Boss : public GameObject
 {
@@ -15,6 +18,10 @@ public:
 
   void update();
   void draw();
+  void takeDamage(float damage) { currentHealth -= damage; }
+  bool getIsDead() { return isDead; }
+
+  CubeCollider *collider;
 
 private:
   Mesh *mesh;
@@ -22,8 +29,9 @@ private:
   float speed;
   float shootTimer;
   float shootInterval;
-  float health;
+  float currentHealth;
   float maxHealth;
+  bool isDead;
   float damage;
   float score;
 

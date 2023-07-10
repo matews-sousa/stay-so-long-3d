@@ -52,12 +52,6 @@ void Enemy::draw()
   for (auto &bullet : bullets)
     bullet->draw();
 
-  // get rotation angle from direction vector
-/*   glm::vec3 axis = glm::cross(glm::vec3(0.0f, 1.0f, 0.0f), direction);
-  float angle = glm::acos(glm::dot(glm::vec3(0.0f, 1.0f, 0.0f), direction));
-
-  this->setRotation(axis * angle); */
-
   glBindTexture(GL_TEXTURE_2D, 0);
   glPushMatrix();
   glMultMatrixf(glm::value_ptr(getModelMatrix()));

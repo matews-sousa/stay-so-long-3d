@@ -122,6 +122,15 @@ void Player::handleShots()
   {
     bullet->update();
 
+    if (World::boss != nullptr)
+    {
+      if (bullet->collider->testCollision(*World::boss->collider))
+      {
+        World::boss->takeDamage(bullet->getDamage());
+        bullet->setLifeTime(bullet->getMaxLifeTime());
+      }
+    }
+
     for (auto &enemy : World::enemies)
     {
       if (bullet->collider->testCollision(*enemy->collider))
