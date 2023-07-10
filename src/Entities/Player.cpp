@@ -8,6 +8,13 @@ Player::Player(glm::vec3 position, glm::vec3 scale) : GameObject(position, scale
   this->shootCooldown = 0.0f;
   this->maxShootCooldown = 0.5f;
 
+  this->dashCooldown = 0.0f;
+  this->maxDashCooldown = 0.5f;
+  this->dashSpeed = 1000.0f;
+  this->dashDuration = 0.1f;
+  this->dashTimer = 0.0f;
+  this->isDashing = false;
+
   setRotation(glm::vec3(0.0f, -90.0f, 0.0f));
 }
 
@@ -72,6 +79,7 @@ void Player::update()
   this->move(direction);
   this->look();
   this->handleShots();
+  this->handleDash(direction);
 
   updateLocalMatrix();
 
@@ -101,6 +109,39 @@ void Player::look()
 
   this->forward = dir;
   this->right = right;
+}
+
+void Player::handleDash(glm::vec3 movingDirection)
+{
+  dashCooldown -= Game::deltaTime;
+  if (Input::isKeyPressed(sf::Keyboard::Space))
+  {
+    if (dashCooldown < 0.0f)
+    {
+      isDashing = true;
+      dashDirection = movingDirection;
+      dashCooldown = maxDashCooldown;
+    }
+  }
+
+  if (isDashing)
+  {
+    dashTimer += Game::deltaTime;
+    dash(dashDirection);
+    if (dashTimer >= dashDuration)
+    {
+      isDashing = false;
+      dashTimer = 0.0f;
+    }
+  }
+}
+
+void Player::dash(glm::vec3 direction)
+{
+  this->velocity = direction * dashSpeed * Game::deltaTime;
+  this->position += this->velocity;
+
+  Game::camera->move(position);
 }
 
 void Player::shoot()
