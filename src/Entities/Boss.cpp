@@ -18,11 +18,16 @@ Boss::Boss(glm::vec3 position, glm::vec3 size) : GameObject(position, size)
 
 Boss::~Boss()
 {
+  delete mesh;
+  delete collider;
+  for (auto &bullet : bullets)
+  {
+    delete bullet;
+  }
 }
 
 void Boss::update()
 {
-  std::cout << "Boss health: " << currentHealth << std::endl;
   isDead = currentHealth <= 0.0f;
   if (isDead)
     return;
@@ -35,6 +40,8 @@ void Boss::update()
   forward = direction;
   this->right = right;
 
+  handleShots();
+
   updateLocalMatrix();
 
   collider->setPosition(position + glm::vec3(0.0f, scale.y, 0.0f));
@@ -43,6 +50,10 @@ void Boss::update()
 void Boss::draw()
 {
   drawHealthBar();
+  for (auto &bullet : bullets)
+  {
+    bullet->draw();
+  }
 
   Texture::bindByName("giant");
   glPushMatrix();
@@ -56,7 +67,35 @@ void Boss::draw()
 
 void Boss::shoot()
 {
-  
+  glm::vec3 initialPosition = position + glm::vec3(0.0f, scale.y, 0.0f);
+
+  Bullet *bullet = new Bullet(damage, 1000.0f, forward, initialPosition, glm::vec3(30.0f, 30.0f, 30.0f));
+  bullets.push_back(bullet);
+}
+
+void Boss::handleShots()
+{
+  shootTimer += Game::deltaTime;
+  if (shootTimer >= shootInterval)
+  {
+    shoot();
+    shootTimer = 0.0f;
+  }
+
+  for (auto &bullet : bullets)
+  {
+    bullet->update();
+  }
+
+  if (bullets.size() > 0)
+  {
+    auto i = std::remove_if(bullets.begin(), bullets.end(), [](Bullet *bullet) {
+      return bullet->getLifeTime() >= bullet->getMaxLifeTime();
+    });
+
+    if (i != bullets.end())
+      bullets.erase(i);
+  }
 }
 
 void Boss::drawHealthBar()

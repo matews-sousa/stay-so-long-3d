@@ -1,7 +1,9 @@
 #pragma once
 
 #include <glm/mat4x4.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #include "GameObject.hpp"
+#include "Bullet.hpp"
 #include "../Core/Game.hpp"
 #include "../Core/Mesh.hpp"
 #include "../Core/Texture.hpp"
@@ -26,9 +28,9 @@ public:
 private:
   Mesh *mesh;
 
+  float angle;
+
   float speed;
-  float shootTimer;
-  float shootInterval;
   float currentHealth;
   float maxHealth;
   bool isDead;
@@ -36,5 +38,10 @@ private:
   float score;
 
   void shoot();
+  void handleShots();
+  float shootTimer;
+  float shootInterval;
+  std::vector<Bullet *> bullets;
+
   void drawHealthBar();
 };
