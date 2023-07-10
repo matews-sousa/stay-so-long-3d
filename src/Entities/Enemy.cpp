@@ -42,6 +42,9 @@ void Enemy::update(glm::vec3 playerPosition)
 
 void Enemy::draw()
 {
+  for (auto &bullet : bullets)
+    bullet->draw();
+
   // get rotation angle from direction vector
   glm::vec3 axis = glm::cross(glm::vec3(0.0f, 1.0f, 0.0f), direction);
   float angle = glm::acos(glm::dot(glm::vec3(0.0f, 1.0f, 0.0f), direction));
@@ -66,6 +69,9 @@ void Enemy::handleEnemyTypes()
       break;
     case CHARGER:
       handleCharger();
+      break;
+    case SHOOTER:
+      handleShooter();
       break;
     default:
       break;
@@ -112,6 +118,39 @@ void Enemy::handleCharger()
       sprintTimer = 0.0f;
       chargeTimer = 0.0f;
     }
+  }
+}
+
+void Enemy::handleShooter()
+{
+  this->position += direction * speed / 2.0f * Game::deltaTime;
+
+  shootCooldown += 0.1f;
+  if (shootCooldown >= shootCooldownDuration)
+  {
+    glm::vec3 bulletDir = direction;
+
+    Bullet *bullet = new Bullet(bulletDamage, bulletSpeed, bulletDir, position, glm::vec3(10.0f, 10.0f, 10.0f));
+    bullets.push_back(bullet);
+
+    shootCooldown = 0.0f;
+  }
+
+  for (auto &bullet : bullets)
+  {
+    bullet->update();
+
+    // handle collision with player
+  }
+
+  if (bullets.size() > 0)
+  {
+    auto i = std::remove_if(bullets.begin(), bullets.end(), [](Bullet *bullet) {
+      return bullet->getLifeTime() >= bullet->getMaxLifeTime();
+    });
+
+    if (i != bullets.end())
+      bullets.erase(i);
   }
 }
 

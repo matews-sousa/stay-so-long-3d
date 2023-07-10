@@ -5,6 +5,7 @@
 #include "../Core/Mesh.hpp"
 #include "../Core/CubeCollider.hpp"
 #include "../Core/SphereCollider.hpp"
+#include "Bullet.hpp"
 #include <glm/vec3.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
@@ -71,4 +72,13 @@ private:
   float sprintForce = 5.0f;
   float sprintTimer = 0.0f;
   float sprintDuration = 3.0f;
+
+  // shooter variables
+  void handleShooter();
+  float shootCooldown = 0.0f;
+  float shootCooldownDuration = 5.0f;
+
+  float bulletSpeed = 1000.0f;
+  float bulletDamage = 10.0f;
+  std::vector<Bullet *> bullets;
 };
