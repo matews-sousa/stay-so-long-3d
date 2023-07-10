@@ -5,10 +5,12 @@
 #include "../Entities/Player.hpp"
 #include "../Entities/Enemy.hpp"
 #include "../Entities/Spaceship.hpp"
+#include "../Entities/Boss.hpp"
 
 class Player;
 class Enemy;
 class Spaceship;
+class Boss;
 
 class World
 {
@@ -22,6 +24,7 @@ public:
   static int score;
   static Player *player;
   static Spaceship *spaceship;
+  static Boss *boss;
   static std::vector<Enemy *> enemies;
 
 private:

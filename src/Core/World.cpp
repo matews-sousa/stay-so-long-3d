@@ -3,6 +3,7 @@
 int World::score;
 Player *World::player;
 Spaceship *World::spaceship;
+Boss *World::boss;
 std::vector<Enemy *> World::enemies;
 
 World::World()
@@ -19,6 +20,8 @@ World::World()
   spawnPoints.push_back(glm::vec3(0.0f, 0.0f, 2000.0f));
   spawnPoints.push_back(glm::vec3(-2000.0f, 0.0f, 0.0f));
   spawnPoints.push_back(glm::vec3(-2000.0f, 0.0f, 2000.0f));
+
+  boss = new Boss(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(50.0f, 50.0f, 50.0f));
 }
 
 World::~World()
@@ -46,15 +49,30 @@ void World::update()
   player->update();
   spaceship->update();
 
-  handleEnemies();
-  handleWaves();
+  if (boss == nullptr)
+  {
+    handleEnemies();
+    handleWaves();
+  }
+  else
+  {
+    boss->update();
+  }
 }
 
 void World::render()
 {
   player->draw();
-  for (auto &enemy : enemies)
-    enemy->draw();
+
+  if (boss == nullptr)
+  {
+    for (auto &enemy : enemies)
+      enemy->draw();
+  }
+  else
+  {
+    boss->draw();
+  }
 
   spaceship->draw();
 
