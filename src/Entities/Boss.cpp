@@ -12,11 +12,9 @@ Boss::Boss(glm::vec3 position, glm::vec3 size) : GameObject(position, size)
 
   mesh = new Mesh("../src/Assets/Models/giant.obj");
 
-  //setRotation(glm::vec3(0.0f, 90.0f, 0.0f));
   forward = glm::vec3(0.0f, 0.0f, 1.0f);
   right = glm::vec3(1.0f, 0.0f, 0.0f);
   up = glm::vec3(0.0f, 1.0f, 0.0f);
-  updateLocalMatrix();
 }
 
 Boss::~Boss()
@@ -43,34 +41,14 @@ void Boss::draw()
 
   Texture::bindByName("giant");
   glPushMatrix();
-  glMultMatrixf(glm::value_ptr(localMatrix * matrix));
-  mesh->render(localMatrix * matrix);
+  glMultMatrixf(glm::value_ptr(getModelMatrix()));
+  mesh->render(getModelMatrix());
   glPopMatrix();
+
+  this->debug();
 }
 
 void Boss::shoot()
 {
   
-}
-
-void Boss::updateLocalMatrix()
-{
-  localMatrix = glm::mat4(1.0f);
-  localMatrix[0][0] = right.x;
-  localMatrix[1][0] = right.y;
-  localMatrix[2][0] = right.z;
-
-  localMatrix[0][1] = up.x;
-  localMatrix[1][1] = up.y;
-  localMatrix[2][1] = up.z;
-
-  localMatrix[0][2] = forward.x;
-  localMatrix[1][2] = forward.y;
-  localMatrix[2][2] = forward.z;
-
-  localMatrix[0][3] = position.x;
-  localMatrix[1][3] = position.y;
-  localMatrix[2][3] = position.z;
-
-  localMatrix = glm::transpose(localMatrix);
 }

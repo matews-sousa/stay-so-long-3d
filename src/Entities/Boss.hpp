@@ -28,11 +28,4 @@ private:
   float score;
 
   void shoot();
-
-  glm::vec3 forward;
-  glm::vec3 right;
-  glm::vec3 up;
-  glm::mat4 localMatrix;
-
-  void updateLocalMatrix();
 };

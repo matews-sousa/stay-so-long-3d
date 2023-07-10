@@ -5,14 +5,10 @@ Player::Player(glm::vec3 position, glm::vec3 scale) : GameObject(position, scale
   this->velocity = glm::vec3(0.0f, 0.0f, 0.0f);
   this->speed = 400.0f;
 
-  this->forward = glm::vec3(0.0f, 0.0f, 1.0f);
-  this->right = glm::vec3(1.0f, 0.0f, 0.0f);
-  this->up = glm::vec3(0.0f, 1.0f, 0.0f);
-
   this->shootCooldown = 0.0f;
   this->maxShootCooldown = 0.5f;
 
-  updateLocalMatrix();
+  setRotation(glm::vec3(0.0f, -90.0f, 0.0f));
 }
 
 Player::~Player()
@@ -151,57 +147,13 @@ void Player::draw()
 {
   for (auto &bullet : bullets)
     bullet->draw();
-
-  glm::mat4 model = glm::mat4(1.0f);
-  model = glm::rotate(model, glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-  model = glm::scale(model, this->scale);
   
   // body
   Texture::bindByName("mecha");
   glPushMatrix();
-    glMultMatrixf(glm::value_ptr(localMatrix * model));
-    Game::models["mecha"]->render(localMatrix * model);
+    glMultMatrixf(glm::value_ptr(getModelMatrix()));
+    Game::models["mecha"]->render(getModelMatrix());
   glPopMatrix();
 
-  glPointSize(10.0f);
-  glBegin(GL_POINTS);
-    glColor3f(1.0f, 0.0f, 0.0f);
-    glVertex3f(this->position.x, this->position.y, this->position.z);
-  glEnd();
-
-  glBegin(GL_LINES);
-    glColor3f(1.0f, 0.0f, 0.0f);
-    glVertex3f(this->position.x, this->position.y, this->position.z);
-    glVertex3f(this->position.x + this->forward.x * 100.0f, this->position.y + this->forward.y * 100.0f, this->position.z + this->forward.z * 100.0f);
-
-    glColor3f(0.0f, 1.0f, 0.0f);
-    glVertex3f(this->position.x, this->position.y, this->position.z);
-    glVertex3f(this->position.x + this->right.x * 100.0f, this->position.y + this->right.y * 100.0f, this->position.z + this->right.z * 100.0f);
-
-    glColor3f(0.0f, 0.0f, 1.0f);
-    glVertex3f(this->position.x, this->position.y, this->position.z);
-    glVertex3f(this->position.x + this->up.x * 100.0f, this->position.y + this->up.y * 100.0f, this->position.z + this->up.z * 100.0f);
-  glEnd();
-}
-
-void Player::updateLocalMatrix()
-{
-  localMatrix = glm::mat4(1.0f);
-  localMatrix[0][0] = right.x;
-  localMatrix[1][0] = right.y;
-  localMatrix[2][0] = right.z;
-
-  localMatrix[0][1] = up.x;
-  localMatrix[1][1] = up.y;
-  localMatrix[2][1] = up.z;
-
-  localMatrix[0][2] = forward.x;
-  localMatrix[1][2] = forward.y;
-  localMatrix[2][2] = forward.z;
-
-  localMatrix[0][3] = position.x;
-  localMatrix[1][3] = position.y;
-  localMatrix[2][3] = position.z;
-
-  localMatrix = glm::transpose(localMatrix);
+  this->debug();
 }
