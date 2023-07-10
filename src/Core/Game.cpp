@@ -3,6 +3,8 @@
 sf::RenderWindow *Game::window;
 Camera *Game::camera;
 MousePicker *Game::picker;
+glm::mat4 Game::projectionMatrix;
+glm::mat4 Game::viewMatrix;
 float Game::deltaTime;
 Terrain *Game::terrain;
 std::map<std::string, Mesh *> Game::models;

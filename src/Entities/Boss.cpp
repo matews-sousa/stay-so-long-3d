@@ -42,6 +42,8 @@ void Boss::update()
 
 void Boss::draw()
 {
+  drawHealthBar();
+
   Texture::bindByName("giant");
   glPushMatrix();
   glMultMatrixf(glm::value_ptr(getModelMatrix()));
@@ -55,4 +57,50 @@ void Boss::draw()
 void Boss::shoot()
 {
   
+}
+
+void Boss::drawHealthBar()
+{
+  float healthPercentage = currentHealth / maxHealth;
+  float barWidth = 500.0f;
+  float barHeight = 25.0f;
+  float barX = Game::window->getSize().x / 2.0f - barWidth / 2.0f;
+  float barY = Game::window->getSize().y - barHeight - 10.0f;
+
+  // remove projection and modelview matrices
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  glm::mat4 ortho = glm::ortho(0.0f, (float)Game::window->getSize().x, 0.0f, (float)Game::window->getSize().y);
+  glLoadMatrixf(glm::value_ptr(ortho));
+  glMatrixMode(GL_MODELVIEW);
+  glLoadIdentity();
+
+  glPushMatrix();
+  glTranslatef(barX, barY, 0.0f);
+
+  // current health bar
+  glColor3f(0.0f, 1.0f, 0.0f);
+  glBegin(GL_QUADS);
+  glVertex2f(0.0f, 0.0f);
+  glVertex2f(barWidth * healthPercentage, 0.0f);
+  glVertex2f(barWidth * healthPercentage, barHeight);
+  glVertex2f(0.0f, barHeight);
+  glEnd();
+
+  // total health bar
+  glColor3f(1.0f, 0.0f, 0.0f);
+  glBegin(GL_QUADS);
+  glVertex2f(0.0f, 0.0f);
+  glVertex2f(barWidth, 0.0f);
+  glVertex2f(barWidth, barHeight);
+  glVertex2f(0.0f, barHeight);
+  glEnd();
+
+  glPopMatrix();
+
+  // reset projection and modelview matrices
+  glMatrixMode(GL_PROJECTION);
+  glLoadMatrixf(glm::value_ptr(Game::projectionMatrix));
+  glMatrixMode(GL_MODELVIEW);
+  glLoadMatrixf(glm::value_ptr(Game::viewMatrix));
 }

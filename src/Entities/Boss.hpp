@@ -36,4 +36,5 @@ private:
   float score;
 
   void shoot();
+  void drawHealthBar();
 };
