@@ -8,13 +8,20 @@
 #include <glm/vec3.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+enum ENEMY_TYPE
+{
+  FOLLOWER,
+  CHARGER,
+  SHOOTER
+};
+
 class SphereCollider;
 class CubeCollider;
 
 class Enemy : public GameObject
 {
 public:
-  Enemy(glm::vec3 initialPosition, glm::vec3 scale);
+  Enemy(glm::vec3 initialPosition, glm::vec3 scale, ENEMY_TYPE type);
   virtual ~Enemy();
 
   SphereCollider *collider;
@@ -38,6 +45,8 @@ public:
   void setPosition(glm::vec3 position);
 
 private:
+  ENEMY_TYPE enemyType;
+
   Mesh *mesh;
 
   glm::vec3 direction;
@@ -45,4 +54,21 @@ private:
 
   int currentHealth;
   int maxHealth;
+
+  void handleEnemyTypes();
+
+  // charger variables 
+  void handleCharger();
+  bool isCharging = false;
+  float chargeTimer = 0.0f;
+  float chargeDuration = 5.0f;
+
+  float chargingTimer = 0.0f;
+  float chargingDuration = 5.0f;
+
+  glm::vec3 sprintDirection;
+  bool isSprinting = false;
+  float sprintForce = 5.0f;
+  float sprintTimer = 0.0f;
+  float sprintDuration = 3.0f;
 };
