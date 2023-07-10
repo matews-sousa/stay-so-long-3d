@@ -113,7 +113,7 @@ void World::handleWaves()
       {
         int random = rand() % spawnPoints.size();
         glm::vec3 spawnPoint = spawnPoints[random];
-        Enemy *enemy = new Enemy(spawnPoint, glm::vec3(25.0f, 25.0f, 25.0f));
+        Enemy *enemy = new Enemy(spawnPoint, glm::vec3(25.0f, 25.0f, 25.0f), SHOOTER);
         enemiesToSpawn.push_back(enemy);
       }
 

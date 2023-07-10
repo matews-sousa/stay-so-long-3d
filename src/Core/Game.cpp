@@ -93,6 +93,7 @@ void Game::initTextures()
   texture = new Texture("../src/Assets/Textures/MicroRecon.png", "micro_recon");
   texture = new Texture("../src/Assets/Textures/InterstellarRunner.png", "runner");
   texture = new Texture("../src/Assets/Textures/Transtellar.png", "stellar");
+  texture = new Texture("../src/Assets/Textures/second color.png", "giant");
 }
 
 void Game::initObjModels()
@@ -100,6 +101,7 @@ void Game::initObjModels()
   models["cube"] = new Mesh("../src/Assets/Models/cube.obj");
   models["sphere"] = new Mesh("../src/Assets/Models/sphere.obj");
   models["mecha"] = new Mesh("../src/Assets/Models/mecha.obj");
+  models["giant"] = new Mesh("../src/Assets/Models/giant.obj");
   models["building"] = new Mesh("../src/Assets/Models/building.obj");
   models["micro_recon"] = new Mesh("../src/Assets/Models/MicroRecon.obj");
   models["runner"] = new Mesh("../src/Assets/Models/InterstellarRunner.obj");
