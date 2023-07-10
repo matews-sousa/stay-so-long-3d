@@ -2,20 +2,25 @@
 
 Player::Player(glm::vec3 position, glm::vec3 scale) : GameObject(position, scale)
 {
-  this->velocity = glm::vec3(0.0f, 0.0f, 0.0f);
-  this->speed = 400.0f;
+  velocity = glm::vec3(0.0f, 0.0f, 0.0f);
+  speed = 400.0f;
 
-  this->shootCooldown = 0.0f;
-  this->maxShootCooldown = 0.5f;
+  maxHealth = 100.0f;
+  currentHealth = maxHealth;
 
-  this->dashCooldown = 0.0f;
-  this->maxDashCooldown = 0.5f;
-  this->dashSpeed = 1000.0f;
-  this->dashDuration = 0.1f;
-  this->dashTimer = 0.0f;
-  this->isDashing = false;
+  shootCooldown = 0.0f;
+  maxShootCooldown = 0.5f;
+
+  dashCooldown = 0.0f;
+  maxDashCooldown = 0.5f;
+  dashSpeed = 1000.0f;
+  dashDuration = 0.1f;
+  dashTimer = 0.0f;
+  isDashing = false;
 
   setRotation(glm::vec3(0.0f, -90.0f, 0.0f));
+
+  collider = new SphereCollider(position + glm::vec3(0.0f, scale.y + 10.0f, 0.0f), scale.x);
 }
 
 Player::~Player()
@@ -86,6 +91,8 @@ void Player::update()
   position.y -= 9.8f * Game::deltaTime;
   if (position.y <= 0.0f)
     position.y = 0.0f;
+
+  collider->setPosition(position + glm::vec3(0.0f, scale.y + 10.0f, 0.0f));
 }
 
 void Player::move(glm::vec3 direction)
@@ -95,7 +102,7 @@ void Player::move(glm::vec3 direction)
 
   this->velocity = direction * speed * Game::deltaTime;
   this->position += this->velocity;
-  
+
   Game::camera->move(position);
 }
 
@@ -195,9 +202,11 @@ void Player::handleShots()
 
 void Player::draw()
 {
+  drawHealthBar();
+  
   for (auto &bullet : bullets)
     bullet->draw();
-  
+
   // body
   Texture::bindByName("mecha");
   glPushMatrix();
@@ -206,4 +215,51 @@ void Player::draw()
   glPopMatrix();
 
   this->debug();
+  collider->debug();
+}
+
+void Player::drawHealthBar()
+{
+  float healthPercentage = currentHealth / maxHealth;
+  float barWidth = 250.0f;
+  float barHeight = 25.0f;
+  float barX = Game::window->getSize().x / 2.0f - barWidth / 2.0f;
+  float barY = 30.0f;
+
+  // remove projection and modelview matrices
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  glm::mat4 ortho = glm::ortho(0.0f, (float)Game::window->getSize().x, 0.0f, (float)Game::window->getSize().y);
+  glLoadMatrixf(glm::value_ptr(ortho));
+  glMatrixMode(GL_MODELVIEW);
+  glLoadIdentity();
+
+  glPushMatrix();
+  glTranslatef(barX, barY, 0.0f);
+
+  // current health bar
+  glColor3f(0.0f, 1.0f, 0.0f);
+  glBegin(GL_QUADS);
+  glVertex2f(0.0f, 0.0f);
+  glVertex2f(barWidth * healthPercentage, 0.0f);
+  glVertex2f(barWidth * healthPercentage, barHeight);
+  glVertex2f(0.0f, barHeight);
+  glEnd();
+
+  // total health bar
+  glColor3f(1.0f, 0.0f, 0.0f);
+  glBegin(GL_QUADS);
+  glVertex2f(0.0f, 0.0f);
+  glVertex2f(barWidth, 0.0f);
+  glVertex2f(barWidth, barHeight);
+  glVertex2f(0.0f, barHeight);
+  glEnd();
+
+  glPopMatrix();
+
+  // reset projection and modelview matrices
+  glMatrixMode(GL_PROJECTION);
+  glLoadMatrixf(glm::value_ptr(Game::projectionMatrix));
+  glMatrixMode(GL_MODELVIEW);
+  glLoadMatrixf(glm::value_ptr(Game::viewMatrix));
 }

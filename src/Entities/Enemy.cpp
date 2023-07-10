@@ -131,8 +131,9 @@ void Enemy::handleShooter()
   if (shootCooldown >= shootCooldownDuration)
   {
     glm::vec3 bulletDir = direction;
+    bulletDir.y = 0.0f;
 
-    Bullet *bullet = new Bullet(bulletDamage, bulletSpeed, bulletDir, position, glm::vec3(10.0f, 10.0f, 10.0f));
+    Bullet *bullet = new Bullet(bulletDamage, bulletSpeed, bulletDir, position + glm::vec3(0.0f, -10.0f, 0.0f), glm::vec3(10.0f, 10.0f, 10.0f));
     bullets.push_back(bullet);
 
     shootCooldown = 0.0f;
@@ -142,7 +143,11 @@ void Enemy::handleShooter()
   {
     bullet->update();
 
-    // handle collision with player
+    if (bullet->collider->testCollision(*World::player->collider))
+    {
+      World::player->takeDamage(bullet->getDamage());
+      bullet->setLifeTime(bullet->getMaxLifeTime());
+    }
   }
 
   if (bullets.size() > 0)

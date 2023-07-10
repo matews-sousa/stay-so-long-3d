@@ -99,6 +99,13 @@ void World::handleEnemies()
   {
     enemy->update(player->getPosition());
 
+    if (enemy->collider->testCollision(*player->collider))
+    {
+      std::cout << "Player hit: " << player->getCurrentHealth() << std::endl;
+      player->takeDamage(10);
+      enemy->takeDamage(enemy->getMaxHealth());
+    }
+
     if (enemy->collider->testCollision(*spaceship->collider))
     {
       enemy->takeDamage(enemy->getMaxHealth());

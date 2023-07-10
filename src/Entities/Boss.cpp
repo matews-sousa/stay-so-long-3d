@@ -88,6 +88,12 @@ void Boss::handleShots()
   for (auto &bullet : bullets)
   {
     bullet->update();
+
+    if (bullet->collider->testCollision(*World::player->collider))
+    {
+      World::player->takeDamage(bullet->getDamage());
+      bullet->setLifeTime(bullet->getMaxLifeTime());
+    }
   }
 
   if (bullets.size() > 0)
