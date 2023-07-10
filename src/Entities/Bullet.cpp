@@ -39,4 +39,5 @@ void Bullet::draw()
   glPopMatrix();
 
   collider->debug();
+  this->debug();
 }

@@ -11,7 +11,10 @@ Enemy::Enemy(glm::vec3 initialPosition, glm::vec3 scale, ENEMY_TYPE type)
   if (type == FOLLOWER)
     mesh = new Mesh("../src/Assets/Models/cube.obj");
   else if (type == CHARGER)
+  {
     mesh = new Mesh("../src/Assets/Models/cone.obj");
+    setRotation(glm::vec3(90.0f, 0.0f, 0.0f));
+  }
   else
     mesh = new Mesh("../src/Assets/Models/sphere.obj");
 
@@ -29,10 +32,14 @@ Enemy::~Enemy()
 
 void Enemy::update(glm::vec3 playerPosition)
 {
-  const float targetY = 25.0f;
+  const float targetY = 35.0f;
   direction = playerPosition - position;
   direction.y = targetY;
   direction = glm::normalize(direction);
+
+  glm::vec3 right = glm::cross(direction, up);
+  forward = direction;
+  this->right = right;
 
   handleEnemyTypes();
 
@@ -45,12 +52,6 @@ void Enemy::draw()
   for (auto &bullet : bullets)
     bullet->draw();
 
-  // get rotation angle from direction vector
-  glm::vec3 axis = glm::cross(glm::vec3(0.0f, 1.0f, 0.0f), direction);
-  float angle = glm::acos(glm::dot(glm::vec3(0.0f, 1.0f, 0.0f), direction));
-
-  this->setRotation(axis * angle);
-
   glBindTexture(GL_TEXTURE_2D, 0);
   glPushMatrix();
   glMultMatrixf(glm::value_ptr(getModelMatrix()));
@@ -58,6 +59,7 @@ void Enemy::draw()
   glPopMatrix();
 
   collider->debug();
+  this->debug();
 }
 
 void Enemy::handleEnemyTypes()

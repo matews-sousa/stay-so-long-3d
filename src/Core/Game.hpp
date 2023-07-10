@@ -29,8 +29,6 @@ class Light;
 class Game
 {
 private:
-  glm::mat4 projectionMatrix;
-  glm::mat4 viewMatrix;
   sf::Clock clock;
   sf::Event event;
   sf::Font *font;
@@ -53,6 +51,8 @@ public:
   static sf::RenderWindow *window;
   static Camera *camera;
   static MousePicker *picker;
+  static glm::mat4 projectionMatrix;
+  static glm::mat4 viewMatrix;
   static float deltaTime;
   static Terrain *terrain;
   static std::map<std::string, Mesh *> models;

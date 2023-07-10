@@ -3,6 +3,8 @@
 sf::RenderWindow *Game::window;
 Camera *Game::camera;
 MousePicker *Game::picker;
+glm::mat4 Game::projectionMatrix;
+glm::mat4 Game::viewMatrix;
 float Game::deltaTime;
 Terrain *Game::terrain;
 std::map<std::string, Mesh *> Game::models;
@@ -39,12 +41,12 @@ Game::Game()
 
   initUiTexts();
 
-  world = new World();
-
   init();
   initLights();
   initTextures();
   initObjModels();
+
+  world = new World();
 
   terrain = new Terrain(0, 0);
   picker = new MousePicker(projectionMatrix, viewMatrix, *window, *terrain);
@@ -113,7 +115,7 @@ void Game::initObjModels()
 void Game::initLights()
 {
   new Light(glm::vec3(200.0f, 500.0f, 200.0f), glm::vec3(0.2f, 0.2f, 0.2f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), LightType::SPOT_LIGHT);
-  new Light(world->player->getPosition(), glm::vec3(0.2f, 0.2f, 0.2f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f));
+  new Light(glm::vec3(0.0f), glm::vec3(0.2f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f));
   
   for (auto &light : Light::lights)
     light->setViewMatrix(viewMatrix);
