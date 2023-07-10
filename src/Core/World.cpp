@@ -1,16 +1,19 @@
 #include "World.hpp"
 
+int World::score;
 Player *World::player;
 Spaceship *World::spaceship;
 std::vector<Enemy *> World::enemies;
 
 World::World()
 {
+  score = 0.0f;
+
   player = new Player(glm::vec3(50.0f, 35.0f, 50.0f), glm::vec3(15.0f, 15.0f, 15.0f));
   spaceship = new Spaceship(glm::vec3(0.0f, -25.0f, 0.0f), glm::vec3(50.0f, 50.0f, 50.0f));
 
-  currentWave = 2;
-  timeBetweenWaves = 10.0f;
+  currentWave = 0;
+  timeBetweenWaves = 5.0f;
   waveTimer = 0.0f;
 
   spawnPoints.push_back(glm::vec3(0.0f, 0.0f, 2000.0f));
@@ -26,6 +29,8 @@ World::~World()
 
 void World::update()
 {
+  Game::uiTexts["score"].setString("Score: " + std::to_string(score));
+
   if (waveTimer > 0.0f)
   {
     std::ostringstream out;
@@ -95,7 +100,11 @@ void World::handleEnemies()
     auto i = std::remove_if(enemies.begin(), enemies.end(), [](Enemy *enemy) { return enemy->isDead(); });
 
     if (i != enemies.end())
+    {
+      Enemy *enemy = *i;
+      score += enemy->getEnemyType() == FOLLOWER ? 50 : enemy->getEnemyType() == SHOOTER ? 75 : 100;
       enemies.erase(i);
+    }
   }
 }
 
@@ -113,7 +122,8 @@ void World::handleWaves()
       {
         int random = rand() % spawnPoints.size();
         glm::vec3 spawnPoint = spawnPoints[random];
-        Enemy *enemy = new Enemy(spawnPoint, glm::vec3(25.0f, 25.0f, 25.0f), SHOOTER);
+        ENEMY_TYPE type = static_cast<ENEMY_TYPE>(rand() % 3);
+        Enemy *enemy = new Enemy(spawnPoint, glm::vec3(25.0f, 25.0f, 25.0f), type);
         enemiesToSpawn.push_back(enemy);
       }
 
