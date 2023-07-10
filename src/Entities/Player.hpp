@@ -27,6 +27,16 @@ private:
   float maxShootCooldown;
   std::vector<Bullet*> bullets;
 
+  void handleDash(glm::vec3 movingDirection);
+  void dash(glm::vec3 direction);
+  glm::vec3 dashDirection;
+  float dashCooldown;
+  float maxDashCooldown;
+  float dashSpeed;
+  float dashDuration;
+  float dashTimer;
+  bool isDashing;
+
   void shoot();
   void handleShots();
 
