@@ -2,9 +2,9 @@
 
 Boss::Boss(glm::vec3 position, glm::vec3 size) : GameObject(position, size)
 {
-  speed = 200.0f;
+  speed = 0.0f;
   shootTimer = 0.0f;
-  shootInterval = 0.5f;
+  shootInterval = 1.5f;
   maxHealth = 100.0f;
   currentHealth = maxHealth;
   isDead = false;
@@ -67,10 +67,13 @@ void Boss::draw()
 
 void Boss::shoot()
 {
-  glm::vec3 initialPosition = position + glm::vec3(0.0f, scale.y, 0.0f);
+  glm::vec3 initialPosition = position + glm::vec3(0.0f, scale.y, 0.0f) + forward * 50.0f - right * 50.0f;
+  glm::vec3 initialPosition2 = position + glm::vec3(0.0f, scale.y, 0.0f) + forward * 50.0f + right * 50.0f;
 
   Bullet *bullet = new Bullet(damage, 1000.0f, forward, initialPosition, glm::vec3(30.0f, 30.0f, 30.0f));
+  Bullet *bullet2 = new Bullet(damage, 1000.0f, forward, initialPosition2, glm::vec3(30.0f, 30.0f, 30.0f));
   bullets.push_back(bullet);
+  bullets.push_back(bullet2);
 }
 
 void Boss::handleShots()

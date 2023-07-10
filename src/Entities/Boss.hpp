@@ -36,7 +36,7 @@ private:
   bool isDead;
   float damage;
   float score;
-
+  
   void shoot();
   void handleShots();
   float shootTimer;
