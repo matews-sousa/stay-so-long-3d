@@ -2,10 +2,10 @@
 
 Boss::Boss(glm::vec3 position, glm::vec3 size) : GameObject(position, size)
 {
-  speed = 0.0f;
+  speed = 200.0f;
   shootTimer = 0.0f;
   shootInterval = 1.5f;
-  maxHealth = 100.0f;
+  maxHealth = 1000.0f;
   currentHealth = maxHealth;
   isDead = false;
   damage = 10.0f;

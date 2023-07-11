@@ -9,6 +9,7 @@ std::vector<Enemy *> World::enemies;
 World::World()
 {
   score = 0.0f;
+  bossScoreStep = 200;
 
   player = new Player(glm::vec3(50.0f, 35.0f, 50.0f), glm::vec3(15.0f, 15.0f, 15.0f));
   spaceship = new Spaceship(glm::vec3(0.0f, -25.0f, 0.0f), glm::vec3(50.0f, 50.0f, 50.0f));
@@ -21,14 +22,14 @@ World::World()
   spawnPoints.push_back(glm::vec3(-2000.0f, 0.0f, 0.0f));
   spawnPoints.push_back(glm::vec3(-2000.0f, 0.0f, 2000.0f));
 
-  boss = new Boss(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(50.0f, 50.0f, 50.0f));
-  //boss = nullptr;
+  boss = nullptr;
 }
 
 World::~World()
 {
   delete player;
   enemies.clear();
+  enemiesToSpawn.clear();
 }
 
 void World::update()
@@ -54,6 +55,17 @@ void World::update()
   {
     handleEnemies();
     handleWaves();
+
+    if (score >= bossScoreStep)
+    {
+      enemies.clear();
+      enemiesToSpawn.clear();
+
+      glm::vec3 spawnPoint = spawnPoints[Utils::genRandomNumberInRange(0, spawnPoints.size())];
+      boss = new Boss(spawnPoint, glm::vec3(50.0f, 50.0f, 50.0f));
+
+      bossScoreStep += 200 * (currentWave + 1);
+    }
   }
   else
   {
@@ -63,6 +75,7 @@ void World::update()
     {
       delete boss;
       boss = nullptr;
+      waveTimer = 0.0f;
     }
   }
 }
@@ -148,13 +161,12 @@ void World::handleWaves()
     if (waveTimer >= timeBetweenWaves)
     {
       currentWave++;
-      int totalEnemies = 5 * currentWave;
+      int totalEnemies = Utils::genRandomNumberInRange(3, 5) * currentWave;
 
       for (int i = 0; i < totalEnemies; i++)
       {
-        int random = rand() % spawnPoints.size();
-        glm::vec3 spawnPoint = spawnPoints[random];
-        ENEMY_TYPE type = static_cast<ENEMY_TYPE>(rand() % 3);
+        glm::vec3 spawnPoint = spawnPoints[Utils::genRandomNumberInRange(0, spawnPoints.size())];
+        ENEMY_TYPE type = static_cast<ENEMY_TYPE>(Utils::genRandomNumberInRange(0, 2));
         Enemy *enemy = new Enemy(spawnPoint, glm::vec3(25.0f, 25.0f, 25.0f), type);
         enemiesToSpawn.push_back(enemy);
       }
@@ -165,9 +177,7 @@ void World::handleWaves()
 
   if (!enemiesToSpawn.empty() && enemies.empty())
   {
-    int random = rand() % spawnPoints.size();
-    
-    int totalEnemiesToSpawn = random * currentWave / 2;
+    int totalEnemiesToSpawn = Utils::genRandomNumberInRange(1, 3) * currentWave / 2.0f;
 
     if (totalEnemiesToSpawn > enemiesToSpawn.size())
       totalEnemiesToSpawn = enemiesToSpawn.size();

@@ -37,4 +37,6 @@ private:
   float timeBetweenWaves;
   float waveTimer;
   std::vector<Enemy *> enemiesToSpawn;
+
+  int bossScoreStep;
 };

@@ -12,7 +12,6 @@
 #include "Camera.hpp"
 #include "Texture.hpp"
 #include "Input.hpp"
-#include "Model.hpp"
 #include "Light.hpp"
 #include "MousePicker.hpp"
 #include "OBJLoader.hpp"

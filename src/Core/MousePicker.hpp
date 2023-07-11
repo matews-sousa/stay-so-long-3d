@@ -10,7 +10,7 @@
 class Terrain;
 
 const int RECURSION_COUNT = 200;
-const float RAY_RANGE = 2000;
+const float RAY_RANGE = 3000;
 
 class MousePicker
 {

@@ -1,5 +1,21 @@
 #include "Utils.hpp"
 
+float Utils::genRandomNumberInRange(float min, float max)
+{
+  std::random_device rd;
+  std::mt19937 gen(rd());
+  std::uniform_real_distribution<> dis(min, max);
+  return dis(gen);
+}
+
+int Utils::genRandomNumberInRange(int min, int max)
+{
+  std::random_device rd;
+  std::mt19937 gen(rd());
+  std::uniform_int_distribution<> dis(min, max);
+  return dis(gen);
+}
+
 bool Utils::isInFrustum(glm::mat4 matrix, glm::vec3 position)
 {
   glm::vec4 pClip = matrix * glm::vec4(position, 1.0f);
