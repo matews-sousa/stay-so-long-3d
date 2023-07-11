@@ -8,8 +8,6 @@ Terrain::Terrain(int gridX, int gridZ)
 
   x = gridX * size;
   z = gridZ * size;
-
-  generateTerrain();
 }
 
 Terrain::~Terrain()
@@ -18,7 +16,7 @@ Terrain::~Terrain()
 
 void Terrain::draw()
 {
-  Texture::bindByName("stone2");
+  Texture::bindByName("stone");
   glm::mat4 modelMatrix = glm::mat4(1.0f);
 
   if (false)
@@ -45,41 +43,34 @@ void Terrain::draw()
         glBegin(GL_TRIANGLE_STRIP);
 
         glm::vec3 illum = Light::calculateAllIllumination(glm::vec3(i, 0.0f, j), glm::vec3(0.0f, 1.0f, 0.0f), modelMatrix);
-        glColor3fv(glm::value_ptr(illum)); glTexCoord2f(0.0f, 0.0f); glNormal3f(0.0f, 1.0f, 0.0f); glVertex3f(i, 0, j);
+        glColor3fv(glm::value_ptr(illum)); glTexCoord2f(0.0f, 0.0f); glNormal3f(0.0f, 1.0f, 0.0f); glVertex3f(i, 0.0f, j);
 
         illum = Light::calculateAllIllumination(glm::vec3(i, 0.0f, j + tileSize), glm::vec3(0.0f, 1.0f, 0.0f), modelMatrix);
-        glColor3fv(glm::value_ptr(illum)); glTexCoord2f(0.0f, 1.0f); glNormal3f(0.0f, 1.0f, 0.0f); glVertex3f(i, 0, j + tileSize);
+        glColor3fv(glm::value_ptr(illum)); glTexCoord2f(0.0f, 1.0f); glNormal3f(0.0f, 1.0f, 0.0f); glVertex3f(i, 0.0f, j + tileSize);
 
         illum = Light::calculateAllIllumination(glm::vec3(i + tileSize, 0.0f, j), glm::vec3(0.0f, 1.0f, 0.0f), modelMatrix);
-        glColor3fv(glm::value_ptr(illum)); glTexCoord2f(1.0f, 0.0f); glNormal3f(0.0f, 1.0f, 0.0f); glVertex3f(i + tileSize, 0, j);
+        glColor3fv(glm::value_ptr(illum)); glTexCoord2f(1.0f, 0.0f); glNormal3f(0.0f, 1.0f, 0.0f); glVertex3f(i + tileSize, 0.0f, j);
         
         illum = Light::calculateAllIllumination(glm::vec3(i + tileSize, 0.0f, j + tileSize), glm::vec3(0.0f, 1.0f, 0.0f), modelMatrix);
-        glColor3fv(glm::value_ptr(illum)); glTexCoord2f(1.0f, 1.0f); glNormal3f(0.0f, 1.0f, 0.0f); glVertex3f(i + tileSize, 0, j + tileSize);
+        glColor3fv(glm::value_ptr(illum)); glTexCoord2f(1.0f, 1.0f); glNormal3f(0.0f, 1.0f, 0.0f); glVertex3f(i + tileSize, 0.0f, j + tileSize);
         
         glEnd();
       }
     }
   }
-}
 
-void Terrain::generateTerrain()
-{
-  displayList = glGenLists(1);
-  glNewList(displayList, GL_COMPILE);
-  Texture::bindByName("wall");
-  
-  for (int i = -size; i < size; i += tileSize)
-  {
-    for (int j = -size; j < size; j += tileSize)
-    {
-      glBegin(GL_TRIANGLE_STRIP);
-      glTexCoord2f(0.0f, 0.0f); glNormal3f(0.0f, 1.0f, 0.0f); glVertex3f(i, 0, j);
-      glTexCoord2f(1.0f, 0.0f); glNormal3f(0.0f, 1.0f, 0.0f); glVertex3f(i + tileSize, 0, j);
-      glTexCoord2f(0.0f, 1.0f); glNormal3f(0.0f, 1.0f, 0.0f); glVertex3f(i, 0, j + tileSize);
-      glTexCoord2f(1.0f, 1.0f); glNormal3f(0.0f, 1.0f, 0.0f); glVertex3f(i + tileSize, 0, j + tileSize);
-      glEnd();
-    }
-  }
+  glColor3f(1.0f, 1.0f, 1.0f);
+  glBegin(GL_QUADS);
+  glTexCoord2f(size / tileSize, size / tileSize); glVertex3f(size, 0, size);
+  glTexCoord2f(0.0f, size / tileSize); glVertex3f(size, -size, size);
+  glTexCoord2f(0.0f, 0.0f); glVertex3f(size, -size, -size);
+  glTexCoord2f(size / tileSize, 0.0f); glVertex3f(size, 0, -size);
+  glEnd();
 
-  glEndList();
+  glBegin(GL_QUADS);
+  glTexCoord2f(size / tileSize, size / tileSize); glVertex3f(size, 0, -size);
+  glTexCoord2f(0.0f, size / tileSize); glVertex3f(size, -size, -size);
+  glTexCoord2f(0.0f, 0.0f); glVertex3f(-size, -size, -size);
+  glTexCoord2f(size / tileSize, 0.0f); glVertex3f(-size, 0, -size);
+  glEnd();
 }

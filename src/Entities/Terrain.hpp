@@ -16,6 +16,8 @@ public:
   virtual ~Terrain();
 
   void draw();
+  int getWidth() { return size; };
+  int getHeight() { return size; };
 
 private:
   int size;
@@ -24,8 +26,4 @@ private:
 
   float x;
   float z;
-
-  GLuint displayList;
-
-  void generateTerrain();
 };

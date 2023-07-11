@@ -32,6 +32,8 @@ private:
   sf::Clock clock;
   sf::Event event;
   sf::Font *font;
+  sf::Texture *backgroundTexture;
+  sf::Sprite *backgroundSprite;
 
   void initUiTexts();
   void initTextures();

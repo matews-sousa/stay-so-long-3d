@@ -33,6 +33,16 @@ Game::Game()
     exit(1);
   }
 
+  backgroundTexture = new sf::Texture();
+  if (!backgroundTexture->loadFromFile("../src/Assets/Textures/Purple_01.png"))
+  {
+    std::cout << "Failed to load background texture" << std::endl;
+  }
+  backgroundSprite = new sf::Sprite(*backgroundTexture);
+  float scaleX = (float)window->getSize().x / (float)backgroundTexture->getSize().x;
+  float scaleY = (float)window->getSize().y / (float)backgroundTexture->getSize().y;
+  backgroundSprite->setScale(scaleX, scaleY);
+
   font = new sf::Font();
   if (!font->loadFromFile("../src/Assets/Fonts/roboto.ttf"))
   {
@@ -49,6 +59,7 @@ Game::Game()
   world = new World();
 
   terrain = new Terrain(0, 0);
+
   picker = new MousePicker(projectionMatrix, viewMatrix, *window, *terrain);
 }
 
@@ -57,6 +68,10 @@ Game::~Game()
   delete window;
   delete world;
   delete camera;
+  delete terrain;
+  delete picker;
+  delete backgroundTexture;
+  delete backgroundSprite;
   models.clear();
 }
 
@@ -128,7 +143,7 @@ void Game::init()
   float halfWidth = window->getSize().x / 2.0f;
   float halfHeight = window->getSize().y / 2.0f;
 
-  projectionMatrix = glm::perspective(glm::radians(45.0f), (float)window->getSize().x / (float)window->getSize().y, 0.1f, 2000.0f);
+  projectionMatrix = glm::perspective(glm::radians(45.0f), (float)window->getSize().x / (float)window->getSize().y, 0.1f, 3000.0f);
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
   glMultMatrixf(glm::value_ptr(projectionMatrix));
@@ -208,6 +223,10 @@ void Game::render()
 {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   
+  window->pushGLStates();
+  window->draw(*backgroundSprite);
+  window->popGLStates();
+
   // draw axis
   glBegin(GL_LINES);
   glColor3f(1.0f, 0.0f, 0.0f);

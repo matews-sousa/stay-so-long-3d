@@ -92,6 +92,17 @@ void Player::update()
   if (position.y <= 0.0f)
     position.y = 0.0f;
 
+  // limit player to the terrain
+  if (position.x < -Game::terrain->getWidth())
+    position.x = -Game::terrain->getWidth();
+  else if (position.x > Game::terrain->getWidth())
+    position.x = Game::terrain->getWidth();
+  else if (position.z < -Game::terrain->getHeight())
+    position.z = -Game::terrain->getHeight();
+  else if (position.z > Game::terrain->getHeight())
+    position.z = Game::terrain->getHeight();
+
+
   collider->setPosition(position + glm::vec3(0.0f, scale.y + 10.0f, 0.0f));
 }
 
