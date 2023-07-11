@@ -17,7 +17,6 @@
 #include "OBJLoader.hpp"
 #include "Mesh.hpp"
 #include "World.hpp"
-#include "../primitives.hpp"
 
 class World;
 class Terrain;

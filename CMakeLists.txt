@@ -11,7 +11,6 @@ find_package(GLEW REQUIRED)
 
 set(SOURCES
   src/main.cpp
-  src/primitives.cpp
   src/Core/Game.cpp
   src/Core/World.cpp
   src/Core/Camera.cpp

@@ -23,6 +23,8 @@ void Game::resume()
   paused = false;
 }
 
+bool showTestCube = false;
+
 Game::Game()
 {
   sf::ContextSettings settings;
@@ -223,6 +225,11 @@ void Game::update()
     debugMode = !debugMode;
     Input::setKeyPressed(sf::Keyboard::M, false);
   }
+  if (Input::isKeyPressed(sf::Keyboard::T))
+  {
+    showTestCube = !showTestCube;
+    Input::setKeyPressed(sf::Keyboard::T, false);
+  }
 
   if (Input::isKeyPressed(sf::Keyboard::Num1))
   {
@@ -266,6 +273,18 @@ void Game::render()
   glColor3f(1.0f, 1.0f, 1.0f);
 
   terrain->draw();
+
+  if (showTestCube)
+  {
+    glm::mat4 modelMatrix = glm::mat4(1.0f);
+    modelMatrix = glm::translate(modelMatrix, glm::vec3(250.0f, 50.0f, 250.0f));
+    modelMatrix = glm::scale(modelMatrix, glm::vec3(50.0f, 50.0f, 50.0f));
+    Texture::bindByName("wall");
+    glPushMatrix();
+    glMultMatrixf(glm::value_ptr(modelMatrix));
+    models["cube"]->render(modelMatrix, CALCULATE_ILLUMINATION);
+    glPopMatrix();
+  }
 
   world->render();
 
