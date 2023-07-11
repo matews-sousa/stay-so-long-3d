@@ -30,12 +30,7 @@ Light::~Light()
 glm::vec3 Light::calculateIllumination(const glm::vec3 &vertexPosition, const glm::vec3 &normal, const glm::mat4 &modelMatrix)
 {
   if (!isOn || !Utils::isInFrustum(projectionMatrix * viewMatrix * modelMatrix, vertexPosition))
-    return glm::vec3(0.0f);
-
-  if (type == DIRECTIONAL_LIGHT)
-  {
-    return diffuse;
-  }
+    return ambient;
 
   glm::vec3 transformedVertexNormal = glm::vec3(glm::transpose(glm::inverse(viewMatrix * modelMatrix)) * glm::vec4(normal, 0.0f)); // Transform normal to world space
   transformedVertexNormal = glm::normalize(transformedVertexNormal); // Normalize normal
@@ -66,7 +61,8 @@ glm::vec3 Light::calculateIllumination(const glm::vec3 &vertexPosition, const gl
   glm::vec3 diff = this->diffuse * brightness * intensity;
   
   // specular
-  glm::vec3 toCameraVector = glm::vec3(glm::inverse(viewMatrix) * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f)) - transformedVertexPosition;
+  glm::vec3 cameraPosition = glm::vec3(glm::inverse(viewMatrix) * glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+  glm::vec3 toCameraVector = cameraPosition - transformedVertexPosition;
   toCameraVector = glm::normalize(toCameraVector);
   glm::vec3 reflectionVector = glm::reflect(-lightDirection, transformedVertexNormal);
   float specularFactor = glm::max(glm::dot(toCameraVector, reflectionVector), 0.0f);
@@ -82,9 +78,6 @@ glm::vec3 Light::calculateAllIllumination(const glm::vec3 &position, const glm::
 
   for (auto &light : lights)
   {
-    if (!light->isOn || !Utils::isInFrustum(light->projectionMatrix * light->viewMatrix * modelMatrix, position))
-      continue;
-
     illumination += light->calculateIllumination(position, normal, modelMatrix);
   }
   return illumination;
