@@ -58,8 +58,11 @@ void Enemy::draw()
   mesh->render(getModelMatrix(), CALCULATE_ILLUMINATION);
   glPopMatrix();
 
-  collider->debug();
-  this->debug();
+  if (Game::debugMode)
+  {
+    collider->debug();
+    this->debug();
+  }
 }
 
 void Enemy::handleEnemyTypes()

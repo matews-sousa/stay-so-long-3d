@@ -120,7 +120,7 @@ void Player::handleLevelUp()
     shootCooldown = std::max(shootCooldown, 0.5f);
 
     maxDashCooldown = maxDashCooldown / (level * 0.5f);
-    maxDashCooldown = std::max(maxDashCooldown, 0.3f);
+    maxDashCooldown = std::max(maxDashCooldown, 0.5f);
 
     maxHealth = maxHealth + 50;
     currentHealth = maxHealth;
@@ -247,8 +247,11 @@ void Player::draw()
     Game::models["mecha"]->render(getModelMatrix());
   glPopMatrix();
 
-  this->debug();
-  collider->debug();
+  if (Game::debugMode)
+  {
+    this->debug();
+    collider->debug();
+  }
 }
 
 void Player::drawHealthBar()

@@ -60,4 +60,7 @@ public:
   static bool debugMode;
   static std::map<std::string, sf::Text> uiTexts;
   static World *world;
+  static bool paused;
+  static void pause();
+  static void resume();
 };

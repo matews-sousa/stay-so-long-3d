@@ -61,8 +61,11 @@ void Boss::draw()
   mesh->render(getModelMatrix());
   glPopMatrix();
 
-  collider->debug();
-  this->debug();
+  if (Game::debugMode)
+  {
+    collider->debug();
+    this->debug();
+  }
 }
 
 void Boss::shoot()

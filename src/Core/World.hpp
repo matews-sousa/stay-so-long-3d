@@ -28,6 +28,8 @@ public:
   static std::vector<Enemy *> enemies;
 
 private:
+  void resetWorld();
+
   void handleEnemies();
   void handleWaves();
 

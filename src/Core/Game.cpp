@@ -11,6 +11,17 @@ std::map<std::string, Mesh *> Game::models;
 std::map<std::string, sf::Text> Game::uiTexts;
 bool Game::debugMode = false;
 World *Game::world;
+bool Game::paused = false;
+
+void Game::pause()
+{
+  paused = true;
+}
+
+void Game::resume()
+{
+  paused = false;
+}
 
 Game::Game()
 {
@@ -198,7 +209,14 @@ void Game::update()
     light->setViewMatrix(viewMatrix);
     light->setProjectionMatrix(projectionMatrix);
   }
-  Light::lights[0]->setLightPosition(glm::vec3(200.0f * cos(lightAngle), 500.0f, 200.0f * sin(lightAngle)));
+  if (!paused)
+    Light::lights[0]->setLightPosition(glm::vec3(200.0f * cos(lightAngle), 500.0f, 200.0f * sin(lightAngle)));
+
+  if (Input::isKeyPressed(sf::Keyboard::Escape))
+  {
+    paused = !paused;
+    Input::setKeyPressed(sf::Keyboard::Escape, false);
+  }
 
   if (Input::isKeyPressed(sf::Keyboard::M))
   {
@@ -229,18 +247,21 @@ void Game::render()
   window->draw(*backgroundSprite);
   window->popGLStates();
 
-  // draw axis
-  glBegin(GL_LINES);
-  glColor3f(1.0f, 0.0f, 0.0f);
-  glVertex3f(-1000.0f, 0.0f, 0.0f);
-  glVertex3f(1000.0f, 0.0f, 0.0f);
-  glColor3f(0.0f, 1.0f, 0.0f);
-  glVertex3f(0.0f, -1000.0f, 0.0f);
-  glVertex3f(0.0f, 1000.0f, 0.0f);
-  glColor3f(0.0f, 0.0f, 1.0f);
-  glVertex3f(0.0f, 0.0f, -1000.0f);
-  glVertex3f(0.0f, 0.0f, 1000.0f);
-  glEnd();
+  if (debugMode)
+  {
+    // draw axis
+    glBegin(GL_LINES);
+    glColor3f(1.0f, 0.0f, 0.0f);
+    glVertex3f(-1000.0f, 0.0f, 0.0f);
+    glVertex3f(1000.0f, 0.0f, 0.0f);
+    glColor3f(0.0f, 1.0f, 0.0f);
+    glVertex3f(0.0f, -1000.0f, 0.0f);
+    glVertex3f(0.0f, 1000.0f, 0.0f);
+    glColor3f(0.0f, 0.0f, 1.0f);
+    glVertex3f(0.0f, 0.0f, -1000.0f);
+    glVertex3f(0.0f, 0.0f, 1000.0f);
+    glEnd();
+  }
 
   glColor3f(1.0f, 1.0f, 1.0f);
 
@@ -248,8 +269,11 @@ void Game::render()
 
   world->render();
 
-  for (auto &light : Light::lights)
-    light->draw();
+  if (debugMode)
+  {
+    for (auto &light : Light::lights)
+      light->draw();
+  }
 
   window->pushGLStates();
 

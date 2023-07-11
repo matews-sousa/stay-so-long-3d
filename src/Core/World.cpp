@@ -34,6 +34,17 @@ World::~World()
 
 void World::update()
 {
+  if (Game::paused)
+    return;
+
+  if (player->getIsDead())
+  {
+    delete player;
+    delete boss;
+    resetWorld();
+    return;
+  }
+
   Game::uiTexts["score"].setString("Score: " + std::to_string(score));
 
   if (waveTimer > 0.0f)
@@ -76,6 +87,7 @@ void World::update()
       delete boss;
       boss = nullptr;
       waveTimer = 0.0f;
+      score += 100.0f;
     }
   }
 }
@@ -106,6 +118,23 @@ void World::render()
   }
 }
 
+void World::resetWorld()
+{
+  enemies.clear();
+  enemiesToSpawn.clear();
+
+  player = new Player(glm::vec3(50.0f, 35.0f, 50.0f), glm::vec3(15.0f, 15.0f, 15.0f));
+  Game::camera->move(player->getPosition());
+  boss = nullptr;
+
+  score = 0.0f;
+  bossScoreStep = 200.0f;
+
+  currentWave = 0;
+  timeBetweenWaves = 5.0f;
+  waveTimer = 0.0f;
+}
+
 void World::handleEnemies()
 {
   for (auto &enemy : enemies)
@@ -114,7 +143,6 @@ void World::handleEnemies()
 
     if (enemy->collider->testCollision(*player->collider))
     {
-      std::cout << "Player hit: " << player->getCurrentHealth() << std::endl;
       player->takeDamage(10);
       enemy->takeDamage(enemy->getMaxHealth());
     }
@@ -142,12 +170,15 @@ void World::handleEnemies()
 
   if (enemies.size() > 0)
   {
-    auto i = std::remove_if(enemies.begin(), enemies.end(), [](Enemy *enemy) { return enemy->isDead(); });
+    auto i = std::remove_if(enemies.begin(), enemies.end(), [](Enemy *enemy) { 
+      if (enemy->isDead())
+        score += enemy->getEnemyType() == FOLLOWER ? 25 : enemy->getEnemyType() == SHOOTER ? 50 : 75;
+    
+      return enemy->isDead();
+    });
 
     if (i != enemies.end())
     {
-      Enemy *enemy = *i;
-      score += enemy->getEnemyType() == FOLLOWER ? 50 : enemy->getEnemyType() == SHOOTER ? 75 : 100;
       enemies.erase(i);
     }
   }

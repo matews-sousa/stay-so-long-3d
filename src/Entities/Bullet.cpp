@@ -38,6 +38,9 @@ void Bullet::draw()
   mesh->render(this->getModelMatrix(), CALCULATE_ILLUMINATION);
   glPopMatrix();
 
-  collider->debug();
-  this->debug();
+  if (Game::debugMode)
+  {
+    collider->debug();
+    this->debug();
+  }
 }

@@ -69,4 +69,6 @@ public:
   float getCurrentHealth() { return this->currentHealth; }
 
   std::vector<Bullet*> getBullets() { return this->bullets; }
+
+  bool getIsDead() { return currentHealth <= 0.0f; }
 };
