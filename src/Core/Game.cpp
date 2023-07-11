@@ -85,6 +85,7 @@ void Game::initUiTexts()
   addText("fps");
   addText("waveTimer");
   addText("score");
+  addText("level");
 
   for (auto &text : uiTexts)
   {
@@ -96,6 +97,7 @@ void Game::initUiTexts()
   uiTexts["fps"].setPosition(0.0f, 0.0f);
   uiTexts["waveTimer"].setPosition(0.0f, 30.0f);
   uiTexts["score"].setPosition(0.0f, 60.0f);
+  uiTexts["level"].setPosition(0.0f, 90.0f);
 }
 
 void Game::initTextures()

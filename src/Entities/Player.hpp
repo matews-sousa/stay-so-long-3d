@@ -23,7 +23,9 @@ class Player : public GameObject
 private:
   glm::vec3 velocity;
   float speed;
-  float rotation;
+
+  int level;
+  int nextLevelUpScore;
 
   float currentHealth;
   float maxHealth;
@@ -43,6 +45,7 @@ private:
   float dashTimer;
   bool isDashing;
 
+  void handleLevelUp();
   void shoot();
   void handleShots();
   void drawHealthBar();

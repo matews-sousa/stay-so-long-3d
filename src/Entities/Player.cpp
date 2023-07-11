@@ -5,16 +5,19 @@ Player::Player(glm::vec3 position, glm::vec3 scale) : GameObject(position, scale
   velocity = glm::vec3(0.0f, 0.0f, 0.0f);
   speed = 400.0f;
 
+  level = 1;
+  nextLevelUpScore = 200.0f;
+
   maxHealth = 100.0f;
   currentHealth = maxHealth;
 
   shootCooldown = 0.0f;
-  maxShootCooldown = 0.5f;
+  maxShootCooldown = 1.0f;
 
   dashCooldown = 0.0f;
-  maxDashCooldown = 0.5f;
+  maxDashCooldown = 1.0f;
   dashSpeed = 1000.0f;
-  dashDuration = 0.1f;
+  dashDuration = 0.15f;
   dashTimer = 0.0f;
   isDashing = false;
 
@@ -85,6 +88,7 @@ void Player::update()
   this->look();
   this->handleShots();
   this->handleDash(direction);
+  this->handleLevelUp();
 
   updateLocalMatrix();
 
@@ -104,6 +108,24 @@ void Player::update()
 
 
   collider->setPosition(position + glm::vec3(0.0f, scale.y + 10.0f, 0.0f));
+}
+
+void Player::handleLevelUp()
+{
+  if (World::score >= nextLevelUpScore)
+  {
+    level++;
+    nextLevelUpScore += 50 * level;
+    shootCooldown = shootCooldown / (level * 0.5f);
+    shootCooldown = std::max(shootCooldown, 0.5f);
+
+    maxDashCooldown = maxDashCooldown / (level * 0.5f);
+    maxDashCooldown = std::max(maxDashCooldown, 0.3f);
+
+    maxHealth = maxHealth + 50;
+    currentHealth = maxHealth;
+  }
+  Game::uiTexts["level"].setString("Level: " + std::to_string(level));
 }
 
 void Player::move(glm::vec3 direction)
